@@ -3,14 +3,12 @@ Reddit data collector for r/AustralianTeachers
 Far-right and gendered discourse in professional educator communities
 
 Strategy:
-  1. Full subreddit sweep (new/top/controversial/hot listings) — captures all recent posts
-  2. Keyword search per category — extends historical reach beyond listing limits
-  Everything is stored; keyword filtering is done post-hoc in the database.
+  Full subreddit sweep (new/top/controversial/hot listings) — captures all recent posts.
+  Everything is stored; keyword filtering is done post-hoc via school-settings-sample-builder.py.
 
 Usage:
-  python collect_data.py             # run both phases
-  python collect_data.py --browse    # browse-only phase
-  python collect_data.py --search    # keyword-search-only phase
+  python collect_data.py             # run full subreddit sweep
+  python collect_data.py --browse    # same (browse-only flag kept for compatibility)
 """
 
 import praw
@@ -40,51 +38,6 @@ DB_NAME     = 'aus_teachers_reddit'
 
 SUBREDDIT   = 'AustralianTeachers'
 scrape_date = datetime.today().strftime('%Y-%m-%d')
-
-# Search terms aligned with the paper's methodological framework.
-# Organised into the same four thematic categories described in the methods.
-SEARCH_TERMS = {
-    "gender_identity_lgbtqia": [
-        "transgender", "trans", "gender ideology", "grooming",
-        "pronouns", "non-binary", "nonbinary", "gender fluid", "genderfluid",
-        "safe schools", "LGBTQ", "LGBTQIA", "LGBTIQA", "queer",
-        "gay", "lesbian", "homosexual", "drag queen", "puberty blocker",
-        "gender affirming", "sex education", "sexuality education",
-        "gender neutral", "same-sex", "gender diverse",
-        "sexual orientation", "pride month", "rainbow curriculum",
-        "transition", "detransition", "gender dysphoria",
-        "born in wrong body", "biological sex", "sex not gender",
-    ],
-    "far_right_ideological": [
-        "woke", "wokism", "wokeness", "anti-woke", "go woke",
-        "indoctrination", "great replacement", "cultural marxism",
-        "political correctness", "cancel culture", "cancelled",
-        "identity politics", "radical left", "leftist agenda",
-        "degeneracy", "white genocide", "globalism", "marxist",
-        "communist", "far left", "extremist agenda", "propaganda",
-        "brainwashing", "social engineering", "postmodernism",
-        "critical race theory", "CRT", "ideological capture",
-        "agenda pushing", "activist teacher",
-    ],
-    "masculinist_discourse": [
-        "alpha male", "real men", "feminazi",
-        "toxic masculinity", "mens rights", "men's rights",
-        "patriarchy", "traditional values", "masculinity",
-        "masculine", "real man", "man up", "breadwinner",
-        "provider", "gender roles", "tradwife", "trad wife",
-        "traditional family", "men should", "protect provide",
-        "boys will be boys", "male role models", "fatherless",
-    ],
-    "diversity_and_inclusion": [
-        "DEI", "gender equality", "diversity", "inclusion",
-        "equity", "affirmative action", "reverse discrimination",
-        "forced diversity", "representation", "diversity hire",
-        "quota", "meritocracy", "equality of outcome",
-        "social justice", "privilege", "white privilege",
-        "systemic racism", "intersectionality", "lived experience",
-        "unconscious bias", "safe space",
-    ],
-}
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -244,16 +197,6 @@ def insert_comments(conn, post, sub_name):
     return len(rows)
 
 
-def record_match(conn, submission_id, category, term):
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT IGNORE INTO search_matches (submission_id, category, search_term, scrape_date)
-        VALUES (%s,%s,%s,%s)
-    """, (submission_id, category, term, scrape_date))
-    conn.commit()
-    cursor.close()
-
-
 # ---------------------------------------------------------------------------
 # Phase 1 – Full subreddit browse
 # ---------------------------------------------------------------------------
@@ -298,65 +241,11 @@ def browse_all_posts():
         log(f"  Done '{label}': {new_posts} new posts, {skipped} already stored")
 
     conn.close()
-    log("[BROWSE] Phase 1 complete.")
+    log("[BROWSE] Complete.")
 
 
 # ---------------------------------------------------------------------------
-# Phase 2 – Keyword search (extends historical reach)
-# ---------------------------------------------------------------------------
-
-def keyword_search():
-    """
-    For each search term, run both 'new' and 'top (all time)' searches.
-    New posts not already in DB are stored; all matching posts get a
-    search_matches record for post-hoc keyword analysis.
-    """
-    sub  = reddit.subreddit(SUBREDDIT)
-    conn = get_connection(DB_NAME)
-    seen = get_existing_post_ids(conn)
-
-    total = sum(len(v) for v in SEARCH_TERMS.values())
-    log(f"[SEARCH] Starting keyword search — {len(SEARCH_TERMS)} categories, {total} terms")
-
-    cat_num = 0
-    for category, terms in SEARCH_TERMS.items():
-        cat_num += 1
-        log(f"  [{cat_num}/{len(SEARCH_TERMS)}] {category} ({len(terms)} terms)")
-
-        for term in terms:
-            found = 0
-            new   = 0
-
-            for sort, extra in [('new', {}), ('top', {'time_filter': 'all'})]:
-                try:
-                    for post in sub.search(term, limit=None, sort=sort, syntax='lucene', **extra):
-                        record_match(conn, post.id, category, term)
-
-                        if post.id not in seen:
-                            insert_post(conn, post)
-                            insert_comments(conn, post, SUBREDDIT)
-                            seen.add(post.id)
-                            new += 1
-
-                        found += 1
-                        time.sleep(0.3)
-
-                except Exception as e:
-                    err = str(e)
-                    wait = 90 if '429' in err or 'rate' in err.lower() else 15
-                    log(f"    ERROR on '{term}' sort={sort}: {e} — sleeping {wait}s")
-                    time.sleep(wait)
-
-            if found:
-                log(f"    '{term}': {found} posts matched, {new} new to DB")
-            time.sleep(1)
-
-    conn.close()
-    log("[SEARCH] Phase 2 complete.")
-
-
-# ---------------------------------------------------------------------------
-# Post-hoc keyword filter (optional helper — run after collection)
+# Post-hoc keyword analysis — see school-settings-sample-builder.py
 # ---------------------------------------------------------------------------
 
 def count_summary():
@@ -367,19 +256,14 @@ def count_summary():
     n_posts = cursor.fetchone()[0]
     cursor.execute("SELECT COUNT(*) FROM comments")
     n_comments = cursor.fetchone()[0]
-    cursor.execute("SELECT COUNT(DISTINCT submission_id) FROM search_matches")
-    n_matched = cursor.fetchone()[0]
-    cursor.execute(
-        "SELECT MIN(post_created_utc), MAX(post_created_utc) FROM posts"
-    )
+    cursor.execute("SELECT MIN(post_created_utc), MAX(post_created_utc) FROM posts")
     date_range = cursor.fetchone()
     cursor.close()
     conn.close()
 
-    log(f"  Posts in DB       : {n_posts:,}")
-    log(f"  Comments in DB    : {n_comments:,}")
-    log(f"  Posts w/ keyword  : {n_matched:,}")
-    log(f"  Date range        : {date_range[0]} → {date_range[1]}")
+    log(f"  Posts in DB    : {n_posts:,}")
+    log(f"  Comments in DB : {n_comments:,}")
+    log(f"  Date range     : {date_range[0]} → {date_range[1]}")
 
 
 # ---------------------------------------------------------------------------
@@ -387,20 +271,9 @@ def count_summary():
 # ---------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    args = sys.argv[1:]
-    browse_only = '--browse' in args
-    search_only = '--search' in args
-    run_both    = not browse_only and not search_only
-
     log(f"=== AustralianTeachers scraper — r/{SUBREDDIT} — {scrape_date} ===")
     setup_db()
-
-    if run_both or browse_only:
-        browse_all_posts()
-
-    if run_both or search_only:
-        keyword_search()
-
+    browse_all_posts()
     log("=== Collection complete — summary ===")
     count_summary()
     log("=== Done ===")

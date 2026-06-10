@@ -1,0 +1,23 @@
+# Credentials — never commit
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# Outputs (regenerated locally)
+sample_posts_*.csv
+sample_comments_*.csv
+coding_export_*.xlsx
+bulk_progress.json
+scraper_log.txt
+bulk_scraper_log.txt
+
+# OS
+.DS_Store
+Thumbs.db

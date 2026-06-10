@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Far-Right School Settings — Qualitative Coding</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:          #f6f5f1;
+      --surface:     #ffffff;
+      --surface-alt: #f9f8f6;
+      --border:      #e4e1da;
+      --text:        #111111;
+      --muted:       #6b7280;
+      --accent:      #1d4ed8;
+      --accent-bg:   #eff6ff;
+      --green:       #16a34a;
+      --red:         #dc2626;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+           background: var(--bg); color: var(--text); }
+
+    /* ── SETUP OVERLAY ── */
+    #setup-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10,10,10,.55); backdrop-filter: blur(5px);
+      display: flex; align-items: center; justify-content: center; z-index: 999;
+    }
+    #setup-box {
+      background: white; border-radius: 16px; padding: 48px 40px;
+      max-width: 440px; width: 90%; text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,.18);
+    }
+    #setup-box h1 { font-size: 1.25rem; margin-bottom: 10px; }
+    #setup-box p  { color: var(--muted); font-size: .88rem; line-height: 1.6; margin-bottom: 28px; }
+    #coder-name-input {
+      width: 100%; padding: 12px 16px; font-size: 1rem;
+      border: 2px solid var(--border); border-radius: 8px;
+      outline: none; margin-bottom: 12px; transition: border-color .2s;
+    }
+    #coder-name-input:focus { border-color: var(--accent); }
+    #start-btn {
+      width: 100%; padding: 13px; background: var(--accent); color: white;
+      border: none; border-radius: 8px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: opacity .15s;
+    }
+    #start-btn:hover { opacity: .88; }
+
+    /* ── APP SHELL ── */
+    #app { display: none; }
+
+    header {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 0 20px; height: 52px;
+      display: flex; align-items: center; gap: 14px;
+      position: sticky; top: 0; z-index: 100;
+    }
+    header h1 { font-size: .9rem; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .coder-badge {
+      background: var(--accent-bg); color: var(--accent);
+      padding: 4px 12px; border-radius: 20px; font-size: .78rem; font-weight: 700;
+      white-space: nowrap;
+    }
+    .progress-text { font-size: .78rem; color: var(--muted); white-space: nowrap; }
+
+    .progress-bar-wrap { height: 3px; background: var(--border); }
+    #progress-bar { height: 100%; background: var(--accent); transition: width .5s; width: 0; }
+
+    .filter-bar {
+      background: white; border-bottom: 1px solid var(--border);
+      padding: 0 20px; height: 42px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ftab {
+      padding: 5px 14px; border-radius: 20px; font-size: .78rem; font-weight: 600;
+      cursor: pointer; border: 1px solid transparent; color: var(--muted);
+      background: none; transition: all .15s;
+    }
+    .ftab.active  { background: var(--accent); color: white; border-color: var(--accent); }
+    .ftab:not(.active):hover { background: var(--surface-alt); border-color: var(--border); }
+
+    /* ── MAIN GRID ── */
+    main {
+      max-width: 1000px; margin: 0 auto; padding: 20px 16px;
+      display: grid; grid-template-columns: 1fr 320px; gap: 18px; align-items: start;
+    }
+    @media (max-width: 720px) { main { grid-template-columns: 1fr; } }
+
+    /* ── ITEM CARD ── */
+    .card { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+
+    .item-meta {
+      padding: 12px 18px; background: var(--surface-alt);
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    }
+    .type-badge {
+      padding: 2px 9px; border-radius: 20px; font-size: .7rem;
+      font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+    }
+    .type-badge.post    { background: #dcfce7; color: #15803d; }
+    .type-badge.comment { background: #fef9c3; color: #92400e; }
+    .meta-pill { font-size: .78rem; color: var(--muted); }
+    .meta-pill a { color: var(--accent); text-decoration: none; }
+    .meta-pill a:hover { text-decoration: underline; }
+
+    .item-title { padding: 14px 18px 4px; font-size: 1rem; font-weight: 700; line-height: 1.4; }
+
+    .item-body {
+      padding: 10px 18px 14px; font-size: .86rem; line-height: 1.75; color: #333;
+      max-height: 300px; overflow-y: auto;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .item-body.expanded { max-height: none; }
+
+    .expand-btn {
+      display: block; text-align: center; padding: 7px;
+      font-size: .78rem; color: var(--accent); cursor: pointer;
+      border-top: 1px solid var(--border); background: var(--surface-alt);
+    }
+    .expand-btn:hover { background: var(--accent-bg); }
+
+    .item-cats {
+      padding: 10px 18px; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 5px;
+    }
+    .cat-chip {
+      padding: 3px 9px; border-radius: 20px; font-size: .7rem; font-weight: 600;
+    }
+    .cat-manosphere_and_male_hierarchy               { background:#dbeafe; color:#1e40af; }
+    .cat-anti_women_and_misogyny                     { background:#f3e8ff; color:#6b21a8; }
+    .cat-masculinity_discourse                       { background:#ccfbf1; color:#0f766e; }
+    .cat-gender_and_feminist_discourse               { background:#e0e7ff; color:#3730a3; }
+    .cat-anti_lgbtq_discourse                        { background:#fce7f3; color:#9d174d; }
+    .cat-far_right_and_ideological_overlap           { background:#fee2e2; color:#991b1b; }
+    .cat-dei_institutional_authority_and_parental_rights { background:#ffedd5; color:#9a3412; }
+
+    .kw-row {
+      padding: 0 18px 12px; display: flex; flex-wrap: wrap; gap: 4px;
+    }
+    .kw-tag {
+      padding: 2px 7px; border-radius: 4px;
+      font-size: .68rem; font-family: 'Menlo', 'Consolas', monospace;
+      background: #f1f5f9; color: #475569;
+    }
+
+    /* ── PARENT POST CONTEXT ── */
+    .parent-toggle {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 18px; border-top: 1px solid var(--border);
+      font-size: .78rem; font-weight: 600; color: var(--muted);
+      cursor: pointer; background: var(--surface-alt);
+      user-select: none;
+    }
+    .parent-toggle:hover { background: #f0f0ea; }
+    .parent-toggle .arrow { transition: transform .2s; display: inline-block; }
+    .parent-toggle.open .arrow { transform: rotate(90deg); }
+    .parent-body {
+      display: none; padding: 12px 18px 14px;
+      border-top: 1px solid var(--border); background: #fafaf7;
+    }
+    .parent-body.open { display: block; }
+    .parent-post-title {
+      font-size: .82rem; font-weight: 700; margin-bottom: 6px; line-height: 1.4;
+    }
+    .parent-post-title a { color: var(--accent); text-decoration: none; }
+    .parent-post-title a:hover { text-decoration: underline; }
+    .parent-post-author { font-size: .72rem; color: var(--muted); margin-bottom: 8px; }
+    .parent-post-text {
+      font-size: .82rem; line-height: 1.65; color: #444;
+      max-height: 180px; overflow-y: auto;
+      white-space: pre-wrap; word-break: break-word;
+    }
+
+    /* ── CODING PANEL ── */
+    .panel { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 18px; }
+    .panel + .panel { margin-top: 14px; }
+    .panel-label {
+      font-size: .72rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--muted); margin-bottom: 12px;
+    }
+
+    .code-list { display: flex; flex-direction: column; gap: 4px; }
+    .code-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 9px; border-radius: 7px; cursor: pointer;
+      transition: background .12s; user-select: none;
+    }
+    .code-row:hover { background: var(--surface-alt); }
+    .code-row.on { background: var(--accent-bg); }
+    .code-row input[type=checkbox] { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+    .code-row label { font-size: .85rem; cursor: pointer; flex: 1; line-height: 1.3; }
+
+    .add-code-row { display: flex; gap: 6px; margin-top: 10px; }
+    .add-code-row input {
+      flex: 1; padding: 7px 10px; font-size: .82rem;
+      border: 1px solid var(--border); border-radius: 6px; outline: none;
+      transition: border-color .2s;
+    }
+    .add-code-row input:focus { border-color: var(--accent); }
+    .add-btn {
+      padding: 7px 11px; background: var(--accent-bg); color: var(--accent);
+      border: none; border-radius: 6px; font-size: .82rem; font-weight: 700; cursor: pointer;
+    }
+    .add-btn:hover { background: #dbeafe; }
+
+    #notes-input {
+      width: 100%; padding: 9px 10px; font-size: .85rem; font-family: inherit;
+      line-height: 1.5; border: 1px solid var(--border); border-radius: 6px;
+      outline: none; resize: vertical; min-height: 80px; transition: border-color .2s;
+    }
+    #notes-input:focus { border-color: var(--accent); }
+
+    .save-row { display: flex; gap: 8px; margin-top: 4px; }
+    .btn-primary {
+      flex: 1; padding: 11px; background: var(--accent); color: white;
+      border: none; border-radius: 8px; font-size: .88rem; font-weight: 700;
+      cursor: pointer; transition: opacity .15s;
+    }
+    .btn-primary:hover { opacity: .88; }
+    .btn-secondary {
+      padding: 11px 14px; background: var(--surface-alt); color: var(--text);
+      border: 1px solid var(--border); border-radius: 8px;
+      font-size: .88rem; cursor: pointer;
+    }
+    .btn-secondary:hover { background: var(--border); }
+
+    #save-indicator { text-align: center; font-size: .76rem; height: 18px; color: var(--muted); }
+    #save-indicator.saving { color: var(--accent); }
+    #save-indicator.saved  { color: var(--green); }
+    #save-indicator.error  { color: var(--red); }
+
+    .nav-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 4px;
+    }
+    .nav-btn {
+      padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px;
+      background: white; font-size: .8rem; cursor: pointer;
+    }
+    .nav-btn:hover { background: var(--surface-alt); }
+    .nav-btn:disabled { opacity: .38; cursor: default; }
+    #item-counter { font-size: .78rem; color: var(--muted); }
+
+    /* ── EMPTY STATE ── */
+    #empty-state {
+      display: none; text-align: center; padding: 80px 24px;
+      grid-column: 1 / -1; color: var(--muted);
+    }
+    #empty-state h2 { font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
+
+    /* ── ALREADY-CODED INDICATOR ── */
+    .coded-flag {
+      display: inline-block; margin-left: 8px;
+      background: #dcfce7; color: #166534;
+      padding: 2px 8px; border-radius: 20px; font-size: .7rem; font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── SETUP OVERLAY ─── -->
+<div id="setup-overlay">
+  <div id="setup-box">
+    <h1>Far-Right School Settings Study</h1>
+    <p>Qualitative coding interface for the r/AustralianTeachers dataset. Enter your name — your coding will save automatically and sync to the research team.</p>
+    <input id="coder-name-input" type="text" placeholder="Your name" autocomplete="off" maxlength="40" />
+    <button id="start-btn">Start Coding</button>
+  </div>
+</div>
+
+<!-- ─── APP ─── -->
+<div id="app">
+  <header>
+    <h1>Far-Right School Settings &mdash; Coding</h1>
+    <span id="coder-badge" class="coder-badge"></span>
+    <span id="progress-text" class="progress-text"></span>
+  </header>
+  <div class="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+  <div class="filter-bar">
+    <button class="ftab active" data-f="uncoded">Uncoded</button>
+    <button class="ftab" data-f="coded">Coded</button>
+    <button class="ftab" data-f="all">All</button>
+  </div>
+
+  <main id="main-grid">
+    <!-- Item card -->
+    <div id="item-card"></div>
+
+    <!-- Coding panel -->
+    <div id="coding-col">
+      <div class="panel">
+        <div class="panel-label">Qualitative Codes</div>
+        <div id="code-list" class="code-list"></div>
+        <div class="add-code-row">
+          <input id="new-code-input" type="text" placeholder="Create new code&hellip;" maxlength="80" />
+          <button class="add-btn" id="add-btn">Add</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-label">Notes / Analytical Memo</div>
+        <textarea id="notes-input" placeholder="Add notes, observations, or analytical memo&hellip;"></textarea>
+      </div>
+
+      <div id="save-indicator"></div>
+
+      <div class="save-row">
+        <button class="btn-primary" id="save-next-btn">Save &amp; Next</button>
+        <button class="btn-secondary" id="skip-btn">Skip</button>
+      </div>
+
+      <div class="nav-row" style="margin-top:12px">
+        <button class="nav-btn" id="prev-btn">&larr; Prev</button>
+        <span id="item-counter"></span>
+        <button class="nav-btn" id="next-btn">Next &rarr;</button>
+      </div>
+    </div>
+
+    <div id="empty-state">
+      <h2>All items coded</h2>
+      <p>Switch to <strong>All</strong> or <strong>Coded</strong> to review your decisions.</p>
+    </div>
+  </main>
+</div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<!-- Sample data — generated by export_for_coding.py, committed to repo -->
+<script src="data.js"></script>
+
+<script>
+// ================================================================
+//  FIREBASE CONFIG
+//  Paste your config from: Firebase Console → Project Settings
+//  → General → Your apps → SDK setup → Config
+// ================================================================
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyCpo4SFUMgG_6ToDTohBy_vCCN7OKCKlv8",
+  authDomain:        "supremacy-school-settings.firebaseapp.com",
+  databaseURL:       "https://supremacy-school-settings-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:         "supremacy-school-settings",
+  storageBucket:     "supremacy-school-settings.firebasestorage.app",
+  messagingSenderId: "63406653663",
+  appId:             "1:63406653663:web:7e370265b8f6ca7b89296a"
+};
+
+// ================================================================
+//  DEFAULT CODEBOOK — edit to match your analytical framework
+// ================================================================
+const DEFAULT_CODES = [
+  "Relevant to study",
+  "Not relevant — discard",
+  "Explicit far-right / manosphere discourse",
+  "Implicit / coded language",
+  "Ironic / satirical",
+  "Critical of far-right",
+  "Genuine pedagogical concern",
+  "Ambiguous — requires more context",
+];
+
+// ================================================================
+//  APP
+// ================================================================
+firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.database();
+
+let coderName    = '';
+let allItems     = typeof SAMPLE_DATA !== 'undefined' ? SAMPLE_DATA : [];
+let myCoding     = {};   // { itemKey: { codes, note } } — this coder's saved decisions
+let customCodes  = [];   // codes added by any coder (shared via Firebase)
+let activeFilter = 'uncoded';
+let filtered     = [];
+let idx          = 0;
+
+// ── Setup ──────────────────────────────────────────────────────
+document.getElementById('start-btn').addEventListener('click', startSession);
+document.getElementById('coder-name-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startSession();
+});
+
+function startSession() {
+  const name = document.getElementById('coder-name-input').value.trim();
+  if (!name) { document.getElementById('coder-name-input').focus(); return; }
+  coderName = name;
+  document.getElementById('setup-overlay').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('coder-badge').textContent = coderName;
+  init();
+}
+
+async function init() {
+  await Promise.all([loadMyCoding(), loadCustomCodes()]);
+  applyFilter();
+  renderItem();
+  updateProgress();
+
+  // Live-sync new custom codes added by other coders
+  db.ref('custom_codes').on('child_added', snap => {
+    const code = snap.key.replace(/~~~/g, ' ');
+    if (!customCodes.includes(code) && !DEFAULT_CODES.includes(code)) {
+      customCodes.push(code);
+      renderCodeList();
+    }
+  });
+}
+
+function fbCoderKey() { return coderName.replace(/[.#$[\]/]/g, '_'); }
+function itemKey(item) { return `${item.type}__${item.id}`; }
+function fbItemKey(k)  { return k.replace(/[.#$[\]/]/g, '_'); }
+
+function loadMyCoding() {
+  return db.ref(`coding/${fbCoderKey()}`).once('value').then(s => {
+    myCoding = s.val() || {};
+  });
+}
+
+function loadCustomCodes() {
+  return db.ref('custom_codes').once('value').then(s => {
+    const v = s.val() || {};
+    customCodes = Object.keys(v).map(k => k.replace(/~~~/g, ' '));
+  });
+}
+
+// ── Filter tabs ────────────────────────────────────────────────
+document.querySelectorAll('.ftab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.f;
+    applyFilter();
+    idx = 0;
+    renderItem();
+    updateProgress();
+  });
+});
+
+function applyFilter() {
+  const isCoded = item => myCoding[fbItemKey(itemKey(item))];
+  if      (activeFilter === 'uncoded') filtered = allItems.filter(i => !isCoded(i));
+  else if (activeFilter === 'coded')   filtered = allItems.filter(i =>  isCoded(i));
+  else                                 filtered = [...allItems];
+}
+
+// ── Render item ────────────────────────────────────────────────
+function renderItem() {
+  applyFilter();
+  const card      = document.getElementById('item-card');
+  const empty     = document.getElementById('empty-state');
+  const mainGrid  = document.getElementById('main-grid');
+  const codingCol = document.getElementById('coding-col');
+
+  if (filtered.length === 0) {
+    card.innerHTML = '';
+    empty.style.display = 'block';
+    codingCol.style.display = 'none';
+    document.getElementById('item-counter').textContent = '';
+    return;
+  }
+
+  empty.style.display = 'none';
+  codingCol.style.display = '';
+
+  if (idx >= filtered.length) idx = filtered.length - 1;
+  if (idx < 0) idx = 0;
+
+  const item   = filtered[idx];
+  const key    = fbItemKey(itemKey(item));
+  const saved  = myCoding[key] || {};
+  const cats   = (item.categories || '').split('|').filter(Boolean);
+  const kws    = (item.keywords_matched || '').split('|').filter(Boolean);
+  const date   = item.created_utc
+    ? new Date(item.created_utc).toLocaleDateString('en-AU', { year:'numeric', month:'short', day:'numeric' })
+    : '';
+  const score   = item.score !== '' && item.score != null ? `&#9650; ${item.score}` : '';
+  const flair   = item.flair ? `<span class="meta-pill" title="flair">${esc(item.flair)}</span>` : '';
+  const already = saved.codes ? '<span class="coded-flag">Coded</span>' : '';
+
+  const catHTML = cats.map(c =>
+    `<span class="cat-chip cat-${c}" title="${c}">${c.replace(/_/g,' ')}</span>`
+  ).join('');
+
+  const kwHTML = kws.map(k => `<span class="kw-tag">${esc(k)}</span>`).join('');
+
+  const titleBlock = (item.type === 'post' && item.title)
+    ? `<div class="item-title">${esc(item.title)}${already}</div>`
+    : `<div class="item-title" style="font-size:.82rem;color:var(--muted);padding-bottom:0">Comment${already}</div>`;
+
+  const body = item.text || '';
+  const needsExpand = body.length > 600;
+
+  // Collapsible original post block (comments only)
+  const parentBlock = (item.type === 'comment' && item.parent_title) ? `
+      <div class="parent-toggle" id="parent-toggle">
+        <span class="arrow">&#9658;</span>
+        <span>Original post &mdash; u/${esc(item.parent_author || '')}</span>
+      </div>
+      <div class="parent-body" id="parent-body">
+        <div class="parent-post-title">
+          ${item.parent_url
+            ? `<a href="${esc(item.parent_url)}" target="_blank" rel="noopener">${esc(item.parent_title)}</a>`
+            : esc(item.parent_title)}
+        </div>
+        ${item.parent_author ? `<div class="parent-post-author">u/${esc(item.parent_author)}</div>` : ''}
+        ${item.parent_text   ? `<div class="parent-post-text">${esc(item.parent_text)}</div>` : ''}
+      </div>` : '';
+
+  card.innerHTML = `
+    <div class="card">
+      <div class="item-meta">
+        <span class="type-badge ${item.type}">${item.type}</span>
+        ${date ? `<span class="meta-pill">${date}</span>` : ''}
+        ${item.author ? `<span class="meta-pill">u/${esc(item.author)}</span>` : ''}
+        ${score ? `<span class="meta-pill">${score}</span>` : ''}
+        ${flair}
+        ${item.url ? `<span class="meta-pill"><a href="${esc(item.url)}" target="_blank" rel="noopener">View on Reddit &rarr;</a></span>` : ''}
+      </div>
+      ${titleBlock}
+      <div class="item-body" id="item-body">${esc(body)}</div>
+      ${needsExpand ? `<div class="expand-btn" id="expand-btn">Show full text</div>` : ''}
+      ${parentBlock}
+      ${catHTML ? `<div class="item-cats">${catHTML}</div>` : ''}
+      ${kwHTML  ? `<div class="kw-row">${kwHTML}</div>` : ''}
+    </div>
+  `;
+
+  if (needsExpand) {
+    document.getElementById('expand-btn').addEventListener('click', () => {
+      const b = document.getElementById('item-body');
+      const e = document.getElementById('expand-btn');
+      b.classList.toggle('expanded');
+      e.textContent = b.classList.contains('expanded') ? 'Collapse' : 'Show full text';
+    });
+  }
+
+  if (document.getElementById('parent-toggle')) {
+    document.getElementById('parent-toggle').addEventListener('click', () => {
+      document.getElementById('parent-toggle').classList.toggle('open');
+      document.getElementById('parent-body').classList.toggle('open');
+    });
+  }
+
+  document.getElementById('notes-input').value = saved.note || '';
+  renderCodeList(saved.codes || []);
+
+  document.getElementById('item-counter').textContent = `${idx + 1} / ${filtered.length}`;
+  document.getElementById('prev-btn').disabled = (idx === 0);
+  document.getElementById('next-btn').disabled = (idx === filtered.length - 1);
+  setSaveIndicator('');
+}
+
+function esc(s) {
+  return String(s || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Code list ──────────────────────────────────────────────────
+function renderCodeList(checked) {
+  if (!checked) {
+    const item = filtered[idx];
+    const k = item ? fbItemKey(itemKey(item)) : null;
+    checked = (k && myCoding[k]) ? (myCoding[k].codes || []) : [];
+  }
+  const all = [...DEFAULT_CODES, ...customCodes];
+  document.getElementById('code-list').innerHTML = all.map((code, i) => {
+    const on  = checked.includes(code);
+    const uid = `c_${i}`;
+    return `
+      <div class="code-row ${on ? 'on' : ''}" onclick="toggleCode(this)">
+        <input type="checkbox" id="${uid}" ${on ? 'checked' : ''} onclick="event.stopPropagation()">
+        <label for="${uid}">${esc(code)}</label>
+      </div>`;
+  }).join('');
+}
+
+window.toggleCode = function(el) {
+  const cb = el.querySelector('input');
+  cb.checked = !cb.checked;
+  el.classList.toggle('on', cb.checked);
+};
+
+// ── Add custom code ────────────────────────────────────────────
+document.getElementById('add-btn').addEventListener('click', addCode);
+document.getElementById('new-code-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addCode();
+});
+
+function addCode() {
+  const inp  = document.getElementById('new-code-input');
+  const code = inp.value.trim();
+  if (!code) return;
+  if (DEFAULT_CODES.includes(code) || customCodes.includes(code)) {
+    inp.value = ''; return;
+  }
+  customCodes.push(code);
+  db.ref(`custom_codes/${code.replace(/\s+/g,'~~~')}`).set(true);
+  inp.value = '';
+  renderCodeList();
+}
+
+// ── Save ───────────────────────────────────────────────────────
+document.getElementById('save-next-btn').addEventListener('click', saveAndNext);
+document.getElementById('skip-btn').addEventListener('click', () => advance());
+
+async function saveAndNext() {
+  if (!filtered.length) return;
+  const item  = filtered[idx];
+  const key   = fbItemKey(itemKey(item));
+  const codes = [...document.querySelectorAll('#code-list .code-row.on label')]
+                  .map(l => l.textContent);
+  const note  = document.getElementById('notes-input').value.trim();
+
+  setSaveIndicator('Saving&hellip;', 'saving');
+
+  try {
+    const entry = {
+      codes,
+      note,
+      timestamp:  new Date().toISOString(),
+      item_id:    item.id,
+      item_type:  item.type,
+      categories: item.categories || '',
+    };
+    await db.ref(`coding/${fbCoderKey()}/${key}`).set(entry);
+    myCoding[key] = entry;
+    setSaveIndicator('Saved', 'saved');
+    updateProgress();
+    setTimeout(advance, 350);
+  } catch (err) {
+    setSaveIndicator('Error — check your Firebase config', 'error');
+    console.error(err);
+  }
+}
+
+function advance() {
+  applyFilter();
+  if (idx < filtered.length - 1) idx++;
+  renderItem();
+}
+
+// ── Navigation ─────────────────────────────────────────────────
+document.getElementById('prev-btn').addEventListener('click', () => {
+  if (idx > 0) { idx--; renderItem(); }
+});
+document.getElementById('next-btn').addEventListener('click', () => {
+  if (idx < filtered.length - 1) { idx++; renderItem(); }
+});
+
+// ── Progress ───────────────────────────────────────────────────
+function updateProgress() {
+  const coded = allItems.filter(i => myCoding[fbItemKey(itemKey(i))]).length;
+  const pct   = allItems.length ? (coded / allItems.length * 100) : 0;
+  document.getElementById('progress-bar').style.width = pct.toFixed(1) + '%';
+  document.getElementById('progress-text').textContent = `${coded} / ${allItems.length} coded`;
+}
+
+function setSaveIndicator(msg, cls) {
+  const el = document.getElementById('save-indicator');
+  el.innerHTML = msg;
+  el.className = cls ? `save-indicator ${cls}` : 'save-indicator';
+}
+</script>
+</body>
+</html>
