@@ -14,6 +14,7 @@ Usage:
 
 import json
 import os
+import re
 import sys
 import csv
 from collections import Counter
@@ -44,14 +45,27 @@ def get_connection():
     )
 
 
+_KW_PATTERNS = {}
+
+def _pattern(kw):
+    """Compile a word-boundary-aware pattern for kw (cached)."""
+    if kw not in _KW_PATTERNS:
+        # Use letter-boundary lookaround instead of \b so hyphens/special chars work correctly.
+        # e.g. "simp" won't match "simple"; "anti-woke" won't match "anti-wokeness".
+        _KW_PATTERNS[kw] = re.compile(
+            r'(?<![a-zA-Z])' + re.escape(kw) + r'(?![a-zA-Z])',
+            re.IGNORECASE
+        )
+    return _KW_PATTERNS[kw]
+
+
 def find_hits(text, keywords_by_category):
     """Return {category: [matched_kw, ...]} for every keyword found in text."""
     if not text:
         return {}
-    text_lower = text.lower()
     hits = {}
     for category, keywords in keywords_by_category.items():
-        matched = [kw for kw in keywords if kw.lower() in text_lower]
+        matched = [kw for kw in keywords if _pattern(kw).search(text)]
         if matched:
             hits[category] = matched
     return hits

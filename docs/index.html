@@ -7,16 +7,17 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg:          #f6f5f1;
-      --surface:     #ffffff;
-      --surface-alt: #f9f8f6;
-      --border:      #e4e1da;
-      --text:        #111111;
-      --muted:       #6b7280;
-      --accent:      #1d4ed8;
-      --accent-bg:   #eff6ff;
-      --green:       #16a34a;
-      --red:         #dc2626;
+      --bg:        #f6f5f1;
+      --surface:   #ffffff;
+      --alt:       #f9f8f6;
+      --border:    #e4e1da;
+      --text:      #111;
+      --muted:     #6b7280;
+      --accent:    #1d4ed8;
+      --accent-bg: #eff6ff;
+      --green:     #16a34a;
+      --green-bg:  #dcfce7;
+      --red:       #dc2626;
     }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
            background: var(--bg); color: var(--text); }
@@ -48,7 +49,7 @@
     #start-btn:hover { opacity: .88; }
 
     /* ── APP SHELL ── */
-    #app { display: none; }
+    #app { display: none; min-height: 100vh; }
 
     header {
       background: white; border-bottom: 1px solid var(--border);
@@ -57,20 +58,17 @@
       position: sticky; top: 0; z-index: 100;
     }
     header h1 { font-size: .9rem; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .coder-badge {
-      background: var(--accent-bg); color: var(--accent);
-      padding: 4px 12px; border-radius: 20px; font-size: .78rem; font-weight: 700;
-      white-space: nowrap;
-    }
+    .coder-badge { background: var(--accent-bg); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: .78rem; font-weight: 700; white-space: nowrap; }
     .progress-text { font-size: .78rem; color: var(--muted); white-space: nowrap; }
-
-    .progress-bar-wrap { height: 3px; background: var(--border); }
+    .progress-bar-wrap { height: 3px; background: var(--border); position: sticky; top: 52px; z-index: 99; }
     #progress-bar { height: 100%; background: var(--accent); transition: width .5s; width: 0; }
 
+    /* ── FILTER BAR ── */
     .filter-bar {
       background: white; border-bottom: 1px solid var(--border);
       padding: 0 20px; height: 42px;
       display: flex; align-items: center; gap: 6px;
+      position: sticky; top: 55px; z-index: 98;
     }
     .ftab {
       padding: 5px 14px; border-radius: 20px; font-size: .78rem; font-weight: 600;
@@ -78,56 +76,20 @@
       background: none; transition: all .15s;
     }
     .ftab.active  { background: var(--accent); color: white; border-color: var(--accent); }
-    .ftab:not(.active):hover { background: var(--surface-alt); border-color: var(--border); }
-
-    /* ── MAIN GRID ── */
-    main {
-      max-width: 1000px; margin: 0 auto; padding: 20px 16px;
-      display: grid; grid-template-columns: 1fr 320px; gap: 18px; align-items: start;
+    .ftab:not(.active):hover { background: var(--alt); border-color: var(--border); }
+    #back-btn {
+      padding: 5px 12px; border-radius: 20px; font-size: .78rem; font-weight: 600;
+      border: 1px solid var(--border); background: white; cursor: pointer; color: var(--muted);
+      display: none; margin-right: 4px;
     }
-    @media (max-width: 720px) { main { grid-template-columns: 1fr; } }
+    #back-btn:hover { background: var(--alt); }
 
-    /* ── ITEM CARD ── */
-    .card { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
-
-    .item-meta {
-      padding: 12px 18px; background: var(--surface-alt);
-      border-bottom: 1px solid var(--border);
-      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
-    }
-    .type-badge {
-      padding: 2px 9px; border-radius: 20px; font-size: .7rem;
-      font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
-    }
+    /* ── SHARED CHIP / BADGE STYLES ── */
+    .type-badge { padding: 2px 9px; border-radius: 20px; font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
     .type-badge.post    { background: #dcfce7; color: #15803d; }
     .type-badge.comment { background: #fef9c3; color: #92400e; }
-    .meta-pill { font-size: .78rem; color: var(--muted); }
-    .meta-pill a { color: var(--accent); text-decoration: none; }
-    .meta-pill a:hover { text-decoration: underline; }
-
-    .item-title { padding: 14px 18px 4px; font-size: 1rem; font-weight: 700; line-height: 1.4; }
-
-    .item-body {
-      padding: 10px 18px 14px; font-size: .86rem; line-height: 1.75; color: #333;
-      max-height: 300px; overflow-y: auto;
-      white-space: pre-wrap; word-break: break-word;
-    }
-    .item-body.expanded { max-height: none; }
-
-    .expand-btn {
-      display: block; text-align: center; padding: 7px;
-      font-size: .78rem; color: var(--accent); cursor: pointer;
-      border-top: 1px solid var(--border); background: var(--surface-alt);
-    }
-    .expand-btn:hover { background: var(--accent-bg); }
-
-    .item-cats {
-      padding: 10px 18px; border-top: 1px solid var(--border);
-      display: flex; flex-wrap: wrap; gap: 5px;
-    }
-    .cat-chip {
-      padding: 3px 9px; border-radius: 20px; font-size: .7rem; font-weight: 600;
-    }
+    .coded-flag { display: inline-block; background: var(--green-bg); color: #166534; padding: 2px 8px; border-radius: 20px; font-size: .7rem; font-weight: 700; }
+    .cat-chip { padding: 3px 9px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
     .cat-manosphere_and_male_hierarchy               { background:#dbeafe; color:#1e40af; }
     .cat-anti_women_and_misogyny                     { background:#f3e8ff; color:#6b21a8; }
     .cat-masculinity_discourse                       { background:#ccfbf1; color:#0f766e; }
@@ -135,142 +97,128 @@
     .cat-anti_lgbtq_discourse                        { background:#fce7f3; color:#9d174d; }
     .cat-far_right_and_ideological_overlap           { background:#fee2e2; color:#991b1b; }
     .cat-dei_institutional_authority_and_parental_rights { background:#ffedd5; color:#9a3412; }
+    .kw-tag { padding: 2px 7px; border-radius: 4px; font-size: .68rem; font-family: monospace; background: #f1f5f9; color: #475569; }
 
-    .kw-row {
-      padding: 0 18px 12px; display: flex; flex-wrap: wrap; gap: 4px;
-    }
-    .kw-tag {
-      padding: 2px 7px; border-radius: 4px;
-      font-size: .68rem; font-family: 'Menlo', 'Consolas', monospace;
-      background: #f1f5f9; color: #475569;
-    }
+    /* ── LIST VIEW ── */
+    #list-view { display: none; }
+    #list-container { max-width: 820px; margin: 0 auto; padding: 20px 16px; }
 
-    /* ── PARENT POST CONTEXT ── */
-    .parent-toggle {
-      display: flex; align-items: center; gap: 8px;
-      padding: 9px 18px; border-top: 1px solid var(--border);
-      font-size: .78rem; font-weight: 600; color: var(--muted);
-      cursor: pointer; background: var(--surface-alt);
-      user-select: none;
+    .list-card {
+      background: white; border: 1px solid var(--border); border-radius: 10px;
+      margin-bottom: 10px; padding: 14px 18px; cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+      border-left: 3px solid transparent;
     }
+    .list-card:hover { border-color: #93c5fd; box-shadow: 0 2px 10px rgba(29,78,216,.08); }
+    .list-card.is-coded { border-left-color: var(--green); }
+
+    .lc-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 7px; font-size: .76rem; color: var(--muted); }
+    .lc-title { font-size: .92rem; font-weight: 700; margin-bottom: 5px; line-height: 1.4; }
+    .lc-preview { font-size: .82rem; color: #555; line-height: 1.5; margin-bottom: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lc-cats { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 7px; }
+
+    .coder-rows { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .coder-row { display: flex; align-items: baseline; gap: 6px; font-size: .76rem; }
+    .coder-name { font-weight: 700; color: var(--green); white-space: nowrap; }
+    .coder-codes { color: var(--text); }
+    .coder-note { color: var(--muted); font-style: italic; }
+
+    .load-more-btn {
+      display: block; width: 100%; padding: 12px; text-align: center;
+      background: white; border: 1px solid var(--border); border-radius: 8px;
+      font-size: .85rem; cursor: pointer; color: var(--accent); margin-top: 4px;
+      transition: background .15s;
+    }
+    .load-more-btn:hover { background: var(--accent-bg); }
+    .list-footer { text-align: center; padding: 16px; color: var(--muted); font-size: .78rem; }
+
+    /* ── DETAIL VIEW ── */
+    #detail-view {
+      max-width: 1000px; margin: 0 auto; padding: 20px 16px;
+      display: grid; grid-template-columns: 1fr 320px; gap: 18px; align-items: start;
+    }
+    @media (max-width: 720px) { #detail-view { grid-template-columns: 1fr; } }
+
+    .card { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+    .item-meta { padding: 12px 18px; background: var(--alt); border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .meta-pill { font-size: .78rem; color: var(--muted); }
+    .meta-pill a { color: var(--accent); text-decoration: none; }
+    .meta-pill a:hover { text-decoration: underline; }
+    .item-title { padding: 14px 18px 4px; font-size: 1rem; font-weight: 700; line-height: 1.4; }
+    .item-body { padding: 10px 18px 14px; font-size: .86rem; line-height: 1.75; color: #333; max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
+    .item-body.expanded { max-height: none; }
+    .expand-btn { display: block; text-align: center; padding: 7px; font-size: .78rem; color: var(--accent); cursor: pointer; border-top: 1px solid var(--border); background: var(--alt); }
+    .expand-btn:hover { background: var(--accent-bg); }
+    .item-cats { padding: 10px 18px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 5px; }
+    .kw-row { padding: 0 18px 12px; display: flex; flex-wrap: wrap; gap: 4px; }
+
+    /* Parent post section */
+    .parent-toggle { display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-top: 1px solid var(--border); font-size: .78rem; font-weight: 600; color: var(--muted); cursor: pointer; background: var(--alt); user-select: none; }
     .parent-toggle:hover { background: #f0f0ea; }
     .parent-toggle .arrow { transition: transform .2s; display: inline-block; }
     .parent-toggle.open .arrow { transform: rotate(90deg); }
-    .parent-body {
-      display: none; padding: 12px 18px 14px;
-      border-top: 1px solid var(--border); background: #fafaf7;
-    }
+    .parent-body { display: none; padding: 12px 18px 14px; border-top: 1px solid var(--border); background: #fafaf7; }
     .parent-body.open { display: block; }
-    .parent-post-title {
-      font-size: .82rem; font-weight: 700; margin-bottom: 6px; line-height: 1.4;
-    }
+    .parent-post-title { font-size: .82rem; font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
     .parent-post-title a { color: var(--accent); text-decoration: none; }
     .parent-post-title a:hover { text-decoration: underline; }
     .parent-post-author { font-size: .72rem; color: var(--muted); margin-bottom: 8px; }
-    .parent-post-text {
-      font-size: .82rem; line-height: 1.65; color: #444;
-      max-height: 180px; overflow-y: auto;
-      white-space: pre-wrap; word-break: break-word;
-    }
+    .parent-post-text { font-size: .82rem; line-height: 1.65; color: #444; max-height: 180px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
 
-    /* ── CODING PANEL ── */
+    /* Coding panel */
     .panel { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 18px; }
     .panel + .panel { margin-top: 14px; }
-    .panel-label {
-      font-size: .72rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: .07em; color: var(--muted); margin-bottom: 12px;
-    }
-
+    .panel-label { font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 12px; }
     .code-list { display: flex; flex-direction: column; gap: 4px; }
-    .code-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 7px 9px; border-radius: 7px; cursor: pointer;
-      transition: background .12s; user-select: none;
-    }
-    .code-row:hover { background: var(--surface-alt); }
+    .code-row { display: flex; align-items: center; gap: 8px; padding: 7px 9px; border-radius: 7px; cursor: pointer; transition: background .12s; user-select: none; }
+    .code-row:hover { background: var(--alt); }
     .code-row.on { background: var(--accent-bg); }
     .code-row input[type=checkbox] { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
     .code-row label { font-size: .85rem; cursor: pointer; flex: 1; line-height: 1.3; }
-
     .add-code-row { display: flex; gap: 6px; margin-top: 10px; }
-    .add-code-row input {
-      flex: 1; padding: 7px 10px; font-size: .82rem;
-      border: 1px solid var(--border); border-radius: 6px; outline: none;
-      transition: border-color .2s;
-    }
+    .add-code-row input { flex: 1; padding: 7px 10px; font-size: .82rem; border: 1px solid var(--border); border-radius: 6px; outline: none; transition: border-color .2s; }
     .add-code-row input:focus { border-color: var(--accent); }
-    .add-btn {
-      padding: 7px 11px; background: var(--accent-bg); color: var(--accent);
-      border: none; border-radius: 6px; font-size: .82rem; font-weight: 700; cursor: pointer;
-    }
+    .add-btn { padding: 7px 11px; background: var(--accent-bg); color: var(--accent); border: none; border-radius: 6px; font-size: .82rem; font-weight: 700; cursor: pointer; }
     .add-btn:hover { background: #dbeafe; }
-
-    #notes-input {
-      width: 100%; padding: 9px 10px; font-size: .85rem; font-family: inherit;
-      line-height: 1.5; border: 1px solid var(--border); border-radius: 6px;
-      outline: none; resize: vertical; min-height: 80px; transition: border-color .2s;
-    }
+    #notes-input { width: 100%; padding: 9px 10px; font-size: .85rem; font-family: inherit; line-height: 1.5; border: 1px solid var(--border); border-radius: 6px; outline: none; resize: vertical; min-height: 80px; transition: border-color .2s; }
     #notes-input:focus { border-color: var(--accent); }
-
     .save-row { display: flex; gap: 8px; margin-top: 4px; }
-    .btn-primary {
-      flex: 1; padding: 11px; background: var(--accent); color: white;
-      border: none; border-radius: 8px; font-size: .88rem; font-weight: 700;
-      cursor: pointer; transition: opacity .15s;
-    }
+    .btn-primary { flex: 1; padding: 11px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: .88rem; font-weight: 700; cursor: pointer; transition: opacity .15s; }
     .btn-primary:hover { opacity: .88; }
-    .btn-secondary {
-      padding: 11px 14px; background: var(--surface-alt); color: var(--text);
-      border: 1px solid var(--border); border-radius: 8px;
-      font-size: .88rem; cursor: pointer;
-    }
+    .btn-secondary { padding: 11px 14px; background: var(--alt); color: var(--text); border: 1px solid var(--border); border-radius: 8px; font-size: .88rem; cursor: pointer; }
     .btn-secondary:hover { background: var(--border); }
-
     #save-indicator { text-align: center; font-size: .76rem; height: 18px; color: var(--muted); }
     #save-indicator.saving { color: var(--accent); }
     #save-indicator.saved  { color: var(--green); }
     #save-indicator.error  { color: var(--red); }
-
-    .nav-row {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-top: 4px;
-    }
-    .nav-btn {
-      padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px;
-      background: white; font-size: .8rem; cursor: pointer;
-    }
-    .nav-btn:hover { background: var(--surface-alt); }
+    .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+    .nav-btn { padding: 6px 12px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: .8rem; cursor: pointer; }
+    .nav-btn:hover { background: var(--alt); }
     .nav-btn:disabled { opacity: .38; cursor: default; }
     #item-counter { font-size: .78rem; color: var(--muted); }
-
-    /* ── EMPTY STATE ── */
-    #empty-state {
-      display: none; text-align: center; padding: 80px 24px;
-      grid-column: 1 / -1; color: var(--muted);
-    }
+    #empty-state { display: none; text-align: center; padding: 80px 24px; grid-column: 1 / -1; color: var(--muted); }
     #empty-state h2 { font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
 
-    /* ── ALREADY-CODED INDICATOR ── */
-    .coded-flag {
-      display: inline-block; margin-left: 8px;
-      background: #dcfce7; color: #166534;
-      padding: 2px 8px; border-radius: 20px; font-size: .7rem; font-weight: 700;
-    }
+    /* Existing coders shown in detail view */
+    .existing-coders { border-top: 1px solid var(--border); margin-top: 10px; padding-top: 10px; }
+    .existing-coders-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
+    .existing-coder-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: baseline; font-size: .78rem; margin-bottom: 4px; }
+    .existing-coder-name { font-weight: 700; color: var(--green); margin-right: 2px; }
   </style>
 </head>
 <body>
 
-<!-- ─── SETUP OVERLAY ─── -->
+<!-- ── SETUP ── -->
 <div id="setup-overlay">
   <div id="setup-box">
     <h1>Far-Right School Settings Study</h1>
-    <p>Qualitative coding interface for the r/AustralianTeachers dataset. Enter your name — your coding will save automatically and sync to the research team.</p>
+    <p>Qualitative coding interface for r/AustralianTeachers. Enter your name — your coding saves automatically and syncs to the research team.</p>
     <input id="coder-name-input" type="text" placeholder="Your name" autocomplete="off" maxlength="40" />
     <button id="start-btn">Start Coding</button>
   </div>
 </div>
 
-<!-- ─── APP ─── -->
+<!-- ── APP ── -->
 <div id="app">
   <header>
     <h1>Far-Right School Settings &mdash; Coding</h1>
@@ -280,16 +228,22 @@
   <div class="progress-bar-wrap"><div id="progress-bar"></div></div>
 
   <div class="filter-bar">
+    <button id="back-btn" onclick="goBackToList()">&#8592; List</button>
     <button class="ftab active" data-f="uncoded">Uncoded</button>
     <button class="ftab" data-f="coded">Coded</button>
     <button class="ftab" data-f="all">All</button>
   </div>
 
-  <main id="main-grid">
-    <!-- Item card -->
+  <!-- LIST VIEW -->
+  <div id="list-view">
+    <div id="list-container"></div>
+    <div id="scroll-sentinel" style="height:1px"></div>
+  </div>
+
+  <!-- DETAIL VIEW -->
+  <div id="detail-view">
     <div id="item-card"></div>
 
-    <!-- Coding panel -->
     <div id="coding-col">
       <div class="panel">
         <div class="panel-label">Qualitative Codes</div>
@@ -298,6 +252,7 @@
           <input id="new-code-input" type="text" placeholder="Create new code&hellip;" maxlength="80" />
           <button class="add-btn" id="add-btn">Add</button>
         </div>
+        <div id="existing-coders-panel"></div>
       </div>
 
       <div class="panel">
@@ -323,20 +278,17 @@
       <h2>All items coded</h2>
       <p>Switch to <strong>All</strong> or <strong>Coded</strong> to review your decisions.</p>
     </div>
-  </main>
+  </div>
 </div>
 
 <!-- Firebase compat SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<!-- Sample data — generated by export_for_coding.py, committed to repo -->
 <script src="data.js"></script>
 
 <script>
 // ================================================================
 //  FIREBASE CONFIG
-//  Paste your config from: Firebase Console → Project Settings
-//  → General → Your apps → SDK setup → Config
 // ================================================================
 const FIREBASE_CONFIG = {
   apiKey:            "AIzaSyCpo4SFUMgG_6ToDTohBy_vCCN7OKCKlv8",
@@ -349,7 +301,7 @@ const FIREBASE_CONFIG = {
 };
 
 // ================================================================
-//  DEFAULT CODEBOOK — edit to match your analytical framework
+//  DEFAULT CODEBOOK
 // ================================================================
 const DEFAULT_CODES = [
   "Relevant to study",
@@ -363,18 +315,22 @@ const DEFAULT_CODES = [
 ];
 
 // ================================================================
-//  APP
+//  STATE
 // ================================================================
 firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.database();
 
-let coderName    = '';
-let allItems     = typeof SAMPLE_DATA !== 'undefined' ? SAMPLE_DATA : [];
-let myCoding     = {};   // { itemKey: { codes, note } } — this coder's saved decisions
-let customCodes  = [];   // codes added by any coder (shared via Firebase)
+let coderName   = '';
+let allItems    = typeof SAMPLE_DATA !== 'undefined' ? SAMPLE_DATA : [];
+let myCoding    = {};   // this coder's decisions
+let allCoding   = {};   // all coders { coderKey: { itemKey: entry } }
+let customCodes = [];
 let activeFilter = 'uncoded';
 let filtered     = [];
 let idx          = 0;
+let viewMode     = 'detail';  // 'detail' | 'list'
+let listOffset   = 0;
+const PAGE       = 50;
 
 // ── Setup ──────────────────────────────────────────────────────
 document.getElementById('start-btn').addEventListener('click', startSession);
@@ -393,19 +349,43 @@ function startSession() {
 }
 
 async function init() {
-  await Promise.all([loadMyCoding(), loadCustomCodes()]);
+  await Promise.all([loadMyCoding(), loadCustomCodes(), loadAllCoding()]);
   applyFilter();
-  renderItem();
+  viewMode = (activeFilter === 'uncoded') ? 'detail' : 'list';
+  render();
   updateProgress();
 
-  // Live-sync new custom codes added by other coders
+  // Live sync: my coding
+  db.ref(`coding/${fbCoderKey()}`).on('value', snap => {
+    myCoding = snap.val() || {};
+    allCoding[fbCoderKey()] = myCoding;
+    if (viewMode === 'list') renderList();
+    updateProgress();
+  });
+
+  // Live sync: all coders (for showing who coded what)
+  db.ref('coding').on('value', snap => {
+    allCoding = snap.val() || {};
+    myCoding  = allCoding[fbCoderKey()] || {};
+    if (viewMode === 'list') renderList();
+    updateProgress();
+  });
+
   db.ref('custom_codes').on('child_added', snap => {
     const code = snap.key.replace(/~~~/g, ' ');
     if (!customCodes.includes(code) && !DEFAULT_CODES.includes(code)) {
       customCodes.push(code);
-      renderCodeList();
+      if (viewMode === 'detail') renderCodeList();
     }
   });
+
+  // Infinite scroll sentinel
+  new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      listOffset += PAGE;
+      appendListItems();
+    }
+  }).observe(document.getElementById('scroll-sentinel'));
 }
 
 function fbCoderKey() { return coderName.replace(/[.#$[\]/]/g, '_'); }
@@ -413,27 +393,39 @@ function itemKey(item) { return `${item.type}__${item.id}`; }
 function fbItemKey(k)  { return k.replace(/[.#$[\]/]/g, '_'); }
 
 function loadMyCoding() {
-  return db.ref(`coding/${fbCoderKey()}`).once('value').then(s => {
-    myCoding = s.val() || {};
-  });
+  return db.ref(`coding/${fbCoderKey()}`).once('value').then(s => { myCoding = s.val() || {}; });
 }
-
 function loadCustomCodes() {
   return db.ref('custom_codes').once('value').then(s => {
-    const v = s.val() || {};
-    customCodes = Object.keys(v).map(k => k.replace(/~~~/g, ' '));
+    customCodes = Object.keys(s.val() || {}).map(k => k.replace(/~~~/g, ' '));
   });
 }
+function loadAllCoding() {
+  return db.ref('coding').once('value').then(s => { allCoding = s.val() || {}; });
+}
 
-// ── Filter tabs ────────────────────────────────────────────────
+function getItemCoders(fbKey) {
+  const out = [];
+  for (const [ck, items] of Object.entries(allCoding)) {
+    if (items && items[fbKey]) {
+      out.push({ name: ck.replace(/_/g, ' '), ...items[fbKey] });
+    }
+  }
+  return out;
+}
+
+// ── Filter ─────────────────────────────────────────────────────
 document.querySelectorAll('.ftab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     activeFilter = btn.dataset.f;
+    listOffset   = 0;
+    idx          = 0;
     applyFilter();
-    idx = 0;
-    renderItem();
+    viewMode = (activeFilter === 'uncoded') ? 'detail' : 'list';
+    document.getElementById('back-btn').style.display = 'none';
+    render();
     updateProgress();
   });
 });
@@ -445,45 +437,133 @@ function applyFilter() {
   else                                 filtered = [...allItems];
 }
 
-// ── Render item ────────────────────────────────────────────────
+// ── Routing ────────────────────────────────────────────────────
+function render() {
+  if (viewMode === 'list') {
+    document.getElementById('list-view').style.display   = 'block';
+    document.getElementById('detail-view').style.display = 'none';
+    renderList();
+  } else {
+    document.getElementById('list-view').style.display   = 'none';
+    document.getElementById('detail-view').style.display = 'grid';
+    renderItem();
+  }
+}
+
+function goBackToList() {
+  viewMode = 'list';
+  document.getElementById('back-btn').style.display = 'none';
+  render();
+}
+
+// ── LIST VIEW ──────────────────────────────────────────────────
+function renderList() {
+  applyFilter();
+  listOffset = 0;
+  const container = document.getElementById('list-container');
+  container.innerHTML = '';
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="list-footer">No items in this view.</div>`;
+    return;
+  }
+  appendListItems();
+}
+
+function appendListItems() {
+  applyFilter();
+  const container = document.getElementById('list-container');
+  const slice = filtered.slice(listOffset, listOffset + PAGE);
+  slice.forEach((item, i) => {
+    container.appendChild(buildListCard(item, listOffset + i));
+  });
+  // footer
+  let footer = container.querySelector('.list-footer');
+  if (footer) footer.remove();
+  const shown = Math.min(listOffset + PAGE, filtered.length);
+  footer = document.createElement('div');
+  footer.className = 'list-footer';
+  footer.textContent = `${shown} of ${filtered.length} items`;
+  container.appendChild(footer);
+}
+
+function buildListCard(item, absoluteIdx) {
+  const key    = fbItemKey(itemKey(item));
+  const coders = getItemCoders(key);
+  const cats   = (item.categories || '').split('|').filter(Boolean);
+  const date   = item.created_utc
+    ? new Date(item.created_utc).toLocaleDateString('en-AU', { year:'numeric', month:'short', day:'numeric' })
+    : '';
+  const preview = (item.text || '').replace(/\s+/g, ' ').slice(0, 220);
+
+  const catHTML = cats.map(c =>
+    `<span class="cat-chip cat-${c}">${c.replace(/_/g,' ')}</span>`
+  ).join('');
+
+  const codersHTML = coders.length ? `<div class="coder-rows">${coders.map(c => `
+    <div class="coder-row">
+      <span class="coder-name">${esc(c.name)}</span>
+      <span class="coder-codes">${esc((c.codes || []).join(' &middot; ') || '(no codes)')}</span>
+      ${c.note ? `<span class="coder-note">&ldquo;${esc(c.note.slice(0,80))}${c.note.length>80?'&hellip;':''}&rdquo;</span>` : ''}
+    </div>`).join('')}</div>` : '';
+
+  const div = document.createElement('div');
+  div.className = `list-card${coders.length ? ' is-coded' : ''}`;
+  div.innerHTML = `
+    <div class="lc-meta">
+      <span class="type-badge ${item.type}">${item.type}</span>
+      ${date ? `<span>${date}</span>` : ''}
+      ${item.author ? `<span>u/${esc(item.author)}</span>` : ''}
+      ${item.score  ? `<span>&#9650; ${item.score}</span>` : ''}
+      ${coders.length ? `<span class="coded-flag">${coders.length} coder${coders.length>1?'s':''}</span>` : ''}
+    </div>
+    ${item.title  ? `<div class="lc-title">${esc(item.title)}</div>` : ''}
+    ${preview     ? `<div class="lc-preview">${esc(preview)}${item.text && item.text.length > 220 ? '…' : ''}</div>` : ''}
+    ${catHTML     ? `<div class="lc-cats">${catHTML}</div>` : ''}
+    ${codersHTML}
+  `;
+  div.addEventListener('click', () => openDetail(absoluteIdx));
+  return div;
+}
+
+function openDetail(absoluteIdx) {
+  idx      = absoluteIdx;
+  viewMode = 'detail';
+  document.getElementById('back-btn').style.display = '';
+  render();
+}
+
+// ── DETAIL VIEW ────────────────────────────────────────────────
 function renderItem() {
   applyFilter();
   const card      = document.getElementById('item-card');
   const empty     = document.getElementById('empty-state');
-  const mainGrid  = document.getElementById('main-grid');
   const codingCol = document.getElementById('coding-col');
 
   if (filtered.length === 0) {
     card.innerHTML = '';
-    empty.style.display = 'block';
+    empty.style.display  = 'block';
     codingCol.style.display = 'none';
     document.getElementById('item-counter').textContent = '';
     return;
   }
 
-  empty.style.display = 'none';
+  empty.style.display     = 'none';
   codingCol.style.display = '';
 
   if (idx >= filtered.length) idx = filtered.length - 1;
   if (idx < 0) idx = 0;
 
-  const item   = filtered[idx];
-  const key    = fbItemKey(itemKey(item));
-  const saved  = myCoding[key] || {};
-  const cats   = (item.categories || '').split('|').filter(Boolean);
-  const kws    = (item.keywords_matched || '').split('|').filter(Boolean);
-  const date   = item.created_utc
+  const item    = filtered[idx];
+  const key     = fbItemKey(itemKey(item));
+  const saved   = myCoding[key] || {};
+  const cats    = (item.categories || '').split('|').filter(Boolean);
+  const kws     = (item.keywords_matched || '').split('|').filter(Boolean);
+  const date    = item.created_utc
     ? new Date(item.created_utc).toLocaleDateString('en-AU', { year:'numeric', month:'short', day:'numeric' })
     : '';
   const score   = item.score !== '' && item.score != null ? `&#9650; ${item.score}` : '';
-  const flair   = item.flair ? `<span class="meta-pill" title="flair">${esc(item.flair)}</span>` : '';
-  const already = saved.codes ? '<span class="coded-flag">Coded</span>' : '';
-
-  const catHTML = cats.map(c =>
-    `<span class="cat-chip cat-${c}" title="${c}">${c.replace(/_/g,' ')}</span>`
-  ).join('');
-
-  const kwHTML = kws.map(k => `<span class="kw-tag">${esc(k)}</span>`).join('');
+  const flair   = item.flair ? `<span class="meta-pill">${esc(item.flair)}</span>` : '';
+  const already = saved.codes ? '<span class="coded-flag" style="margin-left:8px">Coded</span>' : '';
 
   const titleBlock = (item.type === 'post' && item.title)
     ? `<div class="item-title">${esc(item.title)}${already}</div>`
@@ -492,29 +572,33 @@ function renderItem() {
   const body = item.text || '';
   const needsExpand = body.length > 600;
 
-  // Collapsible original post block (comments only)
   const parentBlock = (item.type === 'comment' && item.parent_title) ? `
-      <div class="parent-toggle" id="parent-toggle">
-        <span class="arrow">&#9658;</span>
-        <span>Original post &mdash; u/${esc(item.parent_author || '')}</span>
+    <div class="parent-toggle" id="parent-toggle">
+      <span class="arrow">&#9658;</span>
+      <span>Original post &mdash; u/${esc(item.parent_author || '')}</span>
+    </div>
+    <div class="parent-body" id="parent-body">
+      <div class="parent-post-title">
+        ${item.parent_url
+          ? `<a href="${esc(item.parent_url)}" target="_blank" rel="noopener">${esc(item.parent_title)}</a>`
+          : esc(item.parent_title)}
       </div>
-      <div class="parent-body" id="parent-body">
-        <div class="parent-post-title">
-          ${item.parent_url
-            ? `<a href="${esc(item.parent_url)}" target="_blank" rel="noopener">${esc(item.parent_title)}</a>`
-            : esc(item.parent_title)}
-        </div>
-        ${item.parent_author ? `<div class="parent-post-author">u/${esc(item.parent_author)}</div>` : ''}
-        ${item.parent_text   ? `<div class="parent-post-text">${esc(item.parent_text)}</div>` : ''}
-      </div>` : '';
+      ${item.parent_author ? `<div class="parent-post-author">u/${esc(item.parent_author)}</div>` : ''}
+      ${item.parent_text ? `<div class="parent-post-text">${esc(item.parent_text)}</div>` : ''}
+    </div>` : '';
+
+  const catHTML = cats.map(c =>
+    `<span class="cat-chip cat-${c}">${c.replace(/_/g,' ')}</span>`
+  ).join('');
+  const kwHTML = kws.map(k => `<span class="kw-tag">${esc(k)}</span>`).join('');
 
   card.innerHTML = `
     <div class="card">
       <div class="item-meta">
         <span class="type-badge ${item.type}">${item.type}</span>
-        ${date ? `<span class="meta-pill">${date}</span>` : ''}
+        ${date   ? `<span class="meta-pill">${date}</span>` : ''}
         ${item.author ? `<span class="meta-pill">u/${esc(item.author)}</span>` : ''}
-        ${score ? `<span class="meta-pill">${score}</span>` : ''}
+        ${score  ? `<span class="meta-pill">${score}</span>` : ''}
         ${flair}
         ${item.url ? `<span class="meta-pill"><a href="${esc(item.url)}" target="_blank" rel="noopener">View on Reddit &rarr;</a></span>` : ''}
       </div>
@@ -535,7 +619,6 @@ function renderItem() {
       e.textContent = b.classList.contains('expanded') ? 'Collapse' : 'Show full text';
     });
   }
-
   if (document.getElementById('parent-toggle')) {
     document.getElementById('parent-toggle').addEventListener('click', () => {
       document.getElementById('parent-toggle').classList.toggle('open');
@@ -545,6 +628,7 @@ function renderItem() {
 
   document.getElementById('notes-input').value = saved.note || '';
   renderCodeList(saved.codes || []);
+  renderExistingCoders(key);
 
   document.getElementById('item-counter').textContent = `${idx + 1} / ${filtered.length}`;
   document.getElementById('prev-btn').disabled = (idx === 0);
@@ -552,9 +636,25 @@ function renderItem() {
   setSaveIndicator('');
 }
 
+// Show other coders' decisions in the coding panel
+function renderExistingCoders(key) {
+  const panel  = document.getElementById('existing-coders-panel');
+  const coders = getItemCoders(key).filter(c => c.name !== coderName);
+  if (!coders.length) { panel.innerHTML = ''; return; }
+  panel.innerHTML = `
+    <div class="existing-coders">
+      <div class="existing-coders-label">Other coders</div>
+      ${coders.map(c => `
+        <div class="existing-coder-row">
+          <span class="existing-coder-name">${esc(c.name)}</span>
+          <span>${esc((c.codes||[]).join(', ') || '(no codes)')}</span>
+          ${c.note ? `<span style="color:var(--muted);font-style:italic">&ldquo;${esc(c.note.slice(0,60))}${c.note.length>60?'&hellip;':''}&rdquo;</span>` : ''}
+        </div>`).join('')}
+    </div>`;
+}
+
 function esc(s) {
-  return String(s || '')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 // ── Code list ──────────────────────────────────────────────────
@@ -568,33 +668,20 @@ function renderCodeList(checked) {
   document.getElementById('code-list').innerHTML = all.map((code, i) => {
     const on  = checked.includes(code);
     const uid = `c_${i}`;
-    return `
-      <div class="code-row ${on ? 'on' : ''}" onclick="toggleCode(this)">
-        <input type="checkbox" id="${uid}" ${on ? 'checked' : ''} onclick="event.stopPropagation()">
-        <label for="${uid}">${esc(code)}</label>
-      </div>`;
+    return `<div class="code-row ${on?'on':''}" onclick="toggleCode(this)">
+      <input type="checkbox" id="${uid}" ${on?'checked':''} onclick="event.stopPropagation()">
+      <label for="${uid}">${esc(code)}</label>
+    </div>`;
   }).join('');
 }
+window.toggleCode = el => { const cb = el.querySelector('input'); cb.checked = !cb.checked; el.classList.toggle('on', cb.checked); };
 
-window.toggleCode = function(el) {
-  const cb = el.querySelector('input');
-  cb.checked = !cb.checked;
-  el.classList.toggle('on', cb.checked);
-};
-
-// ── Add custom code ────────────────────────────────────────────
 document.getElementById('add-btn').addEventListener('click', addCode);
-document.getElementById('new-code-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') addCode();
-});
-
+document.getElementById('new-code-input').addEventListener('keydown', e => { if (e.key==='Enter') addCode(); });
 function addCode() {
   const inp  = document.getElementById('new-code-input');
   const code = inp.value.trim();
-  if (!code) return;
-  if (DEFAULT_CODES.includes(code) || customCodes.includes(code)) {
-    inp.value = ''; return;
-  }
+  if (!code || DEFAULT_CODES.includes(code) || customCodes.includes(code)) return;
   customCodes.push(code);
   db.ref(`custom_codes/${code.replace(/\s+/g,'~~~')}`).set(true);
   inp.value = '';
@@ -609,45 +696,25 @@ async function saveAndNext() {
   if (!filtered.length) return;
   const item  = filtered[idx];
   const key   = fbItemKey(itemKey(item));
-  const codes = [...document.querySelectorAll('#code-list .code-row.on label')]
-                  .map(l => l.textContent);
+  const codes = [...document.querySelectorAll('#code-list .code-row.on label')].map(l => l.textContent);
   const note  = document.getElementById('notes-input').value.trim();
-
   setSaveIndicator('Saving&hellip;', 'saving');
-
   try {
-    const entry = {
-      codes,
-      note,
-      timestamp:  new Date().toISOString(),
-      item_id:    item.id,
-      item_type:  item.type,
-      categories: item.categories || '',
-    };
+    const entry = { codes, note, timestamp: new Date().toISOString(), item_id: item.id, item_type: item.type, categories: item.categories||'' };
     await db.ref(`coding/${fbCoderKey()}/${key}`).set(entry);
     myCoding[key] = entry;
     setSaveIndicator('Saved', 'saved');
     updateProgress();
     setTimeout(advance, 350);
-  } catch (err) {
-    setSaveIndicator('Error — check your Firebase config', 'error');
+  } catch(err) {
+    setSaveIndicator('Error — check Firebase config', 'error');
     console.error(err);
   }
 }
+function advance() { applyFilter(); if (idx < filtered.length - 1) idx++; renderItem(); }
 
-function advance() {
-  applyFilter();
-  if (idx < filtered.length - 1) idx++;
-  renderItem();
-}
-
-// ── Navigation ─────────────────────────────────────────────────
-document.getElementById('prev-btn').addEventListener('click', () => {
-  if (idx > 0) { idx--; renderItem(); }
-});
-document.getElementById('next-btn').addEventListener('click', () => {
-  if (idx < filtered.length - 1) { idx++; renderItem(); }
-});
+document.getElementById('prev-btn').addEventListener('click', () => { if (idx > 0) { idx--; renderItem(); } });
+document.getElementById('next-btn').addEventListener('click', () => { if (idx < filtered.length - 1) { idx++; renderItem(); } });
 
 // ── Progress ───────────────────────────────────────────────────
 function updateProgress() {
@@ -656,7 +723,6 @@ function updateProgress() {
   document.getElementById('progress-bar').style.width = pct.toFixed(1) + '%';
   document.getElementById('progress-text').textContent = `${coded} / ${allItems.length} coded`;
 }
-
 function setSaveIndicator(msg, cls) {
   const el = document.getElementById('save-indicator');
   el.innerHTML = msg;
