@@ -1,0 +1,5 @@
+praw
+pandas
+mysql-connector-python
+python-dotenv
+openpyxl

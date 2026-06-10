@@ -1,0 +1,123 @@
+[2026-05-22 13:37:40] === AustralianTeachers scraper — r/AustralianTeachers — 2026-05-22 ===
+[2026-05-22 13:37:40] Database and tables ready.
+[2026-05-22 13:37:40] [BROWSE] Starting full subreddit sweep — 0 posts already in DB
+[2026-05-22 13:37:40]   Listing: new
+[2026-05-22 13:40:03]     new: 100 posts saved, 0 skipped (dupes)
+[2026-05-22 13:41:47]     new: 200 posts saved, 0 skipped (dupes)
+[2026-05-22 13:43:27]     new: 300 posts saved, 0 skipped (dupes)
+[2026-05-22 13:45:08]     new: 400 posts saved, 0 skipped (dupes)
+[2026-05-22 13:46:43]     new: 500 posts saved, 0 skipped (dupes)
+[2026-05-22 13:48:24]     new: 600 posts saved, 0 skipped (dupes)
+[2026-05-22 13:50:03]     new: 700 posts saved, 0 skipped (dupes)
+[2026-05-22 13:51:42]     new: 800 posts saved, 0 skipped (dupes)
+[2026-05-22 13:53:21]     new: 900 posts saved, 0 skipped (dupes)
+[2026-05-22 13:54:59]     new: 1000 posts saved, 0 skipped (dupes)
+[2026-05-22 13:55:00]   Done 'new': 1000 new posts, 0 already stored
+[2026-05-22 13:55:00]   Listing: top (all time)
+[2026-05-22 13:57:45]     top (all time): 100 posts saved, 10 skipped (dupes)
+[2026-05-22 14:00:04]     top (all time): 200 posts saved, 21 skipped (dupes)
+[2026-05-22 14:02:14]     top (all time): 300 posts saved, 27 skipped (dupes)
+[2026-05-22 14:04:26]     top (all time): 400 posts saved, 30 skipped (dupes)
+[2026-05-22 14:05:47]   Done 'top (all time)': 462 new posts, 35 already stored
+[2026-05-22 14:05:47]   Listing: controversial (all)
+[2026-05-22 14:07:46]     controversial (all): 100 posts saved, 8 skipped (dupes)
+[2026-05-22 14:09:31]     controversial (all): 200 posts saved, 16 skipped (dupes)
+[2026-05-22 14:11:11]     controversial (all): 300 posts saved, 26 skipped (dupes)
+[2026-05-22 14:11:32]   Done 'controversial (all)': 322 new posts, 28 already stored
+[2026-05-22 14:11:32]   Listing: hot
+[2026-05-22 14:11:54]   Done 'hot': 3 new posts, 997 already stored
+[2026-05-22 14:11:54] [BROWSE] Phase 1 complete.
+[2026-05-22 14:11:54] [SEARCH] Starting keyword search — 4 categories, 108 terms
+[2026-05-22 14:11:54]   [1/4] gender_identity_lgbtqia (34 terms)
+[2026-05-22 14:12:04]     'transgender': 22 posts matched, 6 new to DB
+[2026-05-22 14:12:34]     'trans': 64 posts matched, 19 new to DB
+[2026-05-22 14:12:41]     'grooming': 8 posts matched, 3 new to DB
+[2026-05-22 14:13:03]     'pronouns': 44 posts matched, 12 new to DB
+[2026-05-22 14:13:09]     'non-binary': 8 posts matched, 2 new to DB
+[2026-05-22 14:13:13]     'nonbinary': 6 posts matched, 1 new to DB
+[2026-05-22 14:16:04]     'safe schools': 304 posts matched, 137 new to DB
+[2026-05-22 14:16:14]     'LGBTQ': 22 posts matched, 5 new to DB
+[2026-05-22 14:16:22]     'LGBTQIA': 14 posts matched, 3 new to DB
+[2026-05-22 14:16:25]     'LGBTIQA': 4 posts matched, 1 new to DB
+[2026-05-22 14:16:39]     'queer': 30 posts matched, 6 new to DB
+[2026-05-22 14:17:15]     'gay': 74 posts matched, 22 new to DB
+[2026-05-22 14:17:18]     'lesbian': 4 posts matched, 0 new to DB
+[2026-05-22 14:17:20]     'homosexual': 2 posts matched, 0 new to DB
+[2026-05-22 14:17:27]     'gender affirming': 4 posts matched, 0 new to DB
+[2026-05-22 14:17:41]     'sex education': 24 posts matched, 9 new to DB
+[2026-05-22 14:17:53]     'sexuality education': 24 posts matched, 5 new to DB
+[2026-05-22 14:18:07]     'gender neutral': 26 posts matched, 9 new to DB
+[2026-05-22 14:18:20]     'same-sex': 22 posts matched, 8 new to DB
+[2026-05-22 14:18:24]     'gender diverse': 6 posts matched, 3 new to DB
+[2026-05-22 14:18:27]     'sexual orientation': 2 posts matched, 1 new to DB
+[2026-05-22 14:18:31]     'pride month': 4 posts matched, 1 new to DB
+[2026-05-22 14:23:12]     'transition': 480 posts matched, 299 new to DB
+[2026-05-22 14:23:16]     'gender dysphoria': 2 posts matched, 0 new to DB
+[2026-05-22 14:23:29]     'born in wrong body': 22 posts matched, 7 new to DB
+[2026-05-22 14:23:31]     'biological sex': 2 posts matched, 0 new to DB
+[2026-05-22 14:23:36]     'sex not gender': 10 posts matched, 0 new to DB
+[2026-05-22 14:23:37]   [2/4] far_right_ideological (30 terms)
+[2026-05-22 14:24:01]     'woke': 48 posts matched, 16 new to DB
+[2026-05-22 14:24:20]     'wokeness': 48 posts matched, 0 new to DB
+[2026-05-22 14:24:29]     'go woke': 16 posts matched, 0 new to DB
+[2026-05-22 14:24:39]     'indoctrination': 18 posts matched, 5 new to DB
+[2026-05-22 14:24:52]     'great replacement': 13 posts matched, 12 new to DB
+[2026-05-22 14:25:08]     'political correctness': 22 posts matched, 8 new to DB
+[2026-05-22 14:25:12]     'cancel culture': 4 posts matched, 1 new to DB
+[2026-05-22 14:26:30]     'cancelled': 109 posts matched, 88 new to DB
+[2026-05-22 14:26:34]     'identity politics': 6 posts matched, 1 new to DB
+[2026-05-22 14:27:24]     'globalism': 86 posts matched, 33 new to DB
+[2026-05-22 14:27:29]     'communist': 4 posts matched, 1 new to DB
+[2026-05-22 14:28:39]     'far left': 130 posts matched, 52 new to DB
+[2026-05-22 14:28:52]     'propaganda': 18 posts matched, 7 new to DB
+[2026-05-22 14:29:00]     'brainwashing': 10 posts matched, 5 new to DB
+[2026-05-22 14:29:06]     'social engineering': 8 posts matched, 2 new to DB
+[2026-05-22 14:29:14]     'critical race theory': 10 posts matched, 3 new to DB
+[2026-05-22 14:34:04]     'CRT': 468 posts matched, 315 new to DB
+[2026-05-22 14:34:10]     'agenda pushing': 4 posts matched, 2 new to DB
+[2026-05-22 14:34:15]     'activist teacher': 6 posts matched, 2 new to DB
+[2026-05-22 14:34:16]   [3/4] masculinist_discourse (23 terms)
+[2026-05-22 14:34:22]     'real men': 8 posts matched, 2 new to DB
+[2026-05-22 14:34:28]     'toxic masculinity': 6 posts matched, 2 new to DB
+[2026-05-22 14:34:33]     'mens rights': 8 posts matched, 1 new to DB
+[2026-05-22 14:34:37]     'men's rights': 8 posts matched, 0 new to DB
+[2026-05-22 14:34:45]     'traditional values': 10 posts matched, 2 new to DB
+[2026-05-22 14:34:53]     'masculinity': 14 posts matched, 4 new to DB
+[2026-05-22 14:34:59]     'masculine': 14 posts matched, 0 new to DB
+[2026-05-22 14:35:09]     'real man': 16 posts matched, 4 new to DB
+[2026-05-22 14:35:49]     'man up': 88 posts matched, 21 new to DB
+[2026-05-22 14:35:55]     'breadwinner': 8 posts matched, 4 new to DB
+[2026-05-22 14:40:52]     'provider': 466 posts matched, 280 new to DB
+[2026-05-22 14:41:00]     'gender roles': 14 posts matched, 3 new to DB
+[2026-05-22 14:41:07]     'traditional family': 6 posts matched, 2 new to DB
+[2026-05-22 14:41:17]     'men should': 16 posts matched, 4 new to DB
+[2026-05-22 14:41:33]     'protect provide': 38 posts matched, 3 new to DB
+[2026-05-22 14:44:10]     'boys will be boys': 336 posts matched, 93 new to DB
+[2026-05-22 14:45:06]     'male role models': 122 posts matched, 30 new to DB
+[2026-05-22 14:45:09]   [4/4] diversity_and_inclusion (21 terms)
+[2026-05-22 14:45:13]     'DEI': 6 posts matched, 3 new to DB
+[2026-05-22 14:45:17]     'gender equality': 8 posts matched, 0 new to DB
+[2026-05-22 14:46:42]     'diversity': 182 posts matched, 62 new to DB
+[2026-05-22 14:49:14]     'inclusion': 332 posts matched, 102 new to DB
+[2026-05-22 14:49:35]     'equity': 44 posts matched, 12 new to DB
+[2026-05-22 14:49:39]     'affirmative action': 4 posts matched, 1 new to DB
+[2026-05-22 14:49:43]     'forced diversity': 4 posts matched, 0 new to DB
+[2026-05-22 14:50:14]     'representation': 60 posts matched, 20 new to DB
+[2026-05-22 14:50:17]     'diversity hire': 4 posts matched, 0 new to DB
+[2026-05-22 14:50:28]     'quota': 20 posts matched, 4 new to DB
+[2026-05-22 14:50:30]     'meritocracy': 2 posts matched, 1 new to DB
+[2026-05-22 14:50:34]     'equality of outcome': 6 posts matched, 1 new to DB
+[2026-05-22 14:50:38]     'social justice': 4 posts matched, 1 new to DB
+[2026-05-22 14:51:27]     'privilege': 96 posts matched, 31 new to DB
+[2026-05-22 14:51:29]     'white privilege': 2 posts matched, 0 new to DB
+[2026-05-22 14:51:34]     'systemic racism': 6 posts matched, 1 new to DB
+[2026-05-22 14:51:38]     'intersectionality': 6 posts matched, 2 new to DB
+[2026-05-22 14:55:29]     'lived experience': 468 posts matched, 192 new to DB
+[2026-05-22 14:55:55]     'safe space': 62 posts matched, 5 new to DB
+[2026-05-22 14:55:56] [SEARCH] Phase 2 complete.
+[2026-05-22 14:55:56] === Collection complete — summary ===
+[2026-05-22 14:55:56]   Posts in DB       : 23,716
+[2026-05-22 14:55:56]   Comments in DB    : 112,891
+[2026-05-22 14:55:56]   Posts w/ keyword  : 2,307
+[2026-05-22 14:55:56]   Date range        : 2017-10-27 04:53:56 → 2026-05-22 01:48:11
+[2026-05-22 14:55:56] === Done ===
