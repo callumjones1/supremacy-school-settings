@@ -1,23 +1,21 @@
 """
 Post-hoc keyword sample builder for r/AustralianTeachers study.
 
-Scans all posts and comments in the database against the keyword categories
-in school-settings-keywords, tags each match with its category/keyword(s),
-and exports CSVs for qualitative coding.
+Default mode builds complete threads: any thread where the post OR any
+comment contains a keyword match is included in full (seed post + all
+comments), with individual items flagged where the keyword appears.
 
 Usage:
-    python school-settings-sample-builder.py              # posts + comments
-    python school-settings-sample-builder.py --posts      # posts only
-    python school-settings-sample-builder.py --comments   # comments only
-    python school-settings-sample-builder.py --summary    # counts only, no CSV output
+    python school-settings-sample-builder.py              # build threads (default)
+    python school-settings-sample-builder.py --threads    # same as above
+    python school-settings-sample-builder.py --summary    # count only, no output
 """
 
 import json
 import os
 import re
 import sys
-import csv
-from collections import Counter
+from collections import defaultdict, Counter
 from datetime import datetime
 import mysql.connector
 from dotenv import load_dotenv
@@ -48,10 +46,7 @@ def get_connection():
 _KW_PATTERNS = {}
 
 def _pattern(kw):
-    """Compile a word-boundary-aware pattern for kw (cached)."""
     if kw not in _KW_PATTERNS:
-        # Use letter-boundary lookaround instead of \b so hyphens/special chars work correctly.
-        # e.g. "simp" won't match "simple"; "anti-woke" won't match "anti-wokeness".
         _KW_PATTERNS[kw] = re.compile(
             r'(?<![a-zA-Z])' + re.escape(kw) + r'(?![a-zA-Z])',
             re.IGNORECASE
@@ -71,133 +66,160 @@ def find_hits(text, keywords_by_category):
     return hits
 
 
-def scan_posts(keywords_by_category):
-    conn   = get_connection()
+def build_threads(keywords_by_category, summary_only=False):
+    conn = get_connection()
+
+    # ── Step 1: Load and scan all posts ──────────────────────────
+    print("Loading posts...", flush=True)
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT submission_id, title, selftext, post_url,
-               post_author, post_created_utc, score, num_comments, post_flair
+        SELECT submission_id, title, selftext, post_url, post_author,
+               post_created_utc, score, num_comments, post_flair
         FROM posts
-        ORDER BY post_created_utc
     """)
-
-    results = []
+    all_posts = {}
+    post_hits = {}
     for row in cursor:
-        text = f"{row['title'] or ''} {row['selftext'] or ''}"
-        hits = find_hits(text, keywords_by_category)
+        sid  = row['submission_id']
+        all_posts[sid] = row
+        hits = find_hits(f"{row['title'] or ''} {row['selftext'] or ''}", keywords_by_category)
         if hits:
-            all_cats = sorted(hits.keys())
-            all_kws  = sorted({kw for kws in hits.values() for kw in kws})
-            results.append({
-                'type':             'post',
-                'id':               row['submission_id'],
-                'url':              row['post_url'],
-                'author':           row['post_author'],
-                'created_utc':      row['post_created_utc'],
-                'score':            row['score'],
-                'num_comments':     row['num_comments'],
-                'flair':            row['post_flair'],
-                'title':            row['title'],
-                'text':             row['selftext'],
-                'categories':       '|'.join(all_cats),
-                'keywords_matched': '|'.join(all_kws),
-            })
-
+            post_hits[sid] = hits
     cursor.close()
-    conn.close()
-    return results
+    print(f"  {len(post_hits):,} of {len(all_posts):,} posts contain keyword matches")
 
-
-def scan_comments(keywords_by_category):
-    conn   = get_connection()
+    # ── Step 2: Load and scan all comments ───────────────────────
+    print("Loading comments...", flush=True)
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT c.comment_id, c.submission_id, c.comment_body,
-               c.comment_author, c.comment_created_utc, c.comment_score, c.comment_url,
-               p.title      AS parent_title,
-               p.selftext   AS parent_text,
-               p.post_url   AS parent_url,
-               p.post_author AS parent_author
-        FROM comments c
-        LEFT JOIN posts p ON c.submission_id = p.submission_id
-        ORDER BY c.comment_created_utc
+        SELECT comment_id, submission_id, comment_body, comment_author,
+               comment_created_utc, comment_score, comment_depth,
+               parent_id, comment_url
+        FROM comments
     """)
-
-    results = []
+    comments_by_sid = defaultdict(list)
+    comment_hits    = {}
     for row in cursor:
+        comments_by_sid[row['submission_id']].append(row)
         hits = find_hits(row['comment_body'] or '', keywords_by_category)
         if hits:
-            all_cats = sorted(hits.keys())
-            all_kws  = sorted({kw for kws in hits.values() for kw in kws})
-            results.append({
-                'type':             'comment',
-                'id':               row['comment_id'],
-                'submission_id':    row['submission_id'],
-                'url':              row['comment_url'],
-                'author':           row['comment_author'],
-                'created_utc':      row['comment_created_utc'],
-                'score':            row['comment_score'],
-                'text':             row['comment_body'],
-                'categories':       '|'.join(all_cats),
-                'keywords_matched': '|'.join(all_kws),
-                'parent_title':     row['parent_title'] or '',
-                'parent_text':      row['parent_text']  or '',
-                'parent_url':       row['parent_url']   or '',
-                'parent_author':    row['parent_author'] or '',
-            })
-
+            comment_hits[row['comment_id']] = hits
     cursor.close()
     conn.close()
-    return results
+
+    comment_matched_sids = {
+        row['submission_id']
+        for rows in comments_by_sid.values()
+        for row in rows
+        if row['comment_id'] in comment_hits
+    }
+    all_matched_sids = set(post_hits.keys()) | comment_matched_sids
+    total_comments = sum(len(comments_by_sid[sid]) for sid in all_matched_sids)
+
+    print(f"  {len(comment_hits):,} comments with keyword matches across {len(comment_matched_sids):,} threads")
+    print(f"  {len(all_matched_sids) - len(post_hits):,} extra threads from comment-only matches")
+    print(f"Total unique threads : {len(all_matched_sids):,}")
+    print(f"Total comments in those threads: {total_comments:,}")
+    print(f"Average comments per thread: {total_comments // max(len(all_matched_sids), 1)}")
+
+    if summary_only:
+        return []
+
+    # ── Step 3: Build thread objects ─────────────────────────────
+    print(f"\nBuilding {len(all_matched_sids):,} thread objects...", flush=True)
+    threads = []
+    for i, sid in enumerate(sorted(all_matched_sids), 1):
+        if i % 100 == 0:
+            print(f"  {i:,} / {len(all_matched_sids):,}", flush=True)
+
+        post   = all_posts.get(sid)
+        p_hits = post_hits.get(sid, {})
+        raw_comments = sorted(
+            comments_by_sid.get(sid, []),
+            key=lambda c: (str(c['comment_created_utc'] or ''), c['comment_id'])
+        )
+
+        thread_cats = set()
+        thread_kws  = set()
+        for cat, kws in p_hits.items():
+            thread_cats.add(cat); thread_kws.update(kws)
+
+        comment_list = []
+        for c in raw_comments:
+            c_hits = comment_hits.get(c['comment_id'], {})
+            for cat, kws in c_hits.items():
+                thread_cats.add(cat); thread_kws.update(kws)
+            comment_list.append({
+                'id':               c['comment_id'],
+                'author':           c['comment_author'] or '[deleted]',
+                'created_utc':      str(c['comment_created_utc']) if c['comment_created_utc'] else '',
+                'score':            c['comment_score'],
+                'depth':            c['comment_depth'] or 0,
+                'parent_id':        c['parent_id'] or '',
+                'text':             c['comment_body'] or '[deleted]',
+                'url':              c['comment_url'] or '',
+                'categories':       '|'.join(sorted(c_hits.keys())),
+                'keywords_matched': '|'.join(sorted({kw for kws in c_hits.values() for kw in kws})),
+                'has_match':        bool(c_hits),
+            })
+
+        post_obj = None
+        if post:
+            post_obj = {
+                'title':            post['title'] or '',
+                'text':             post['selftext'] or '',
+                'author':           post['post_author'] or '[deleted]',
+                'created_utc':      str(post['post_created_utc']) if post['post_created_utc'] else '',
+                'score':            post['score'],
+                'num_comments':     post['num_comments'],
+                'flair':            post['post_flair'] or '',
+                'url':              post['post_url'] or '',
+                'categories':       '|'.join(sorted(p_hits.keys())),
+                'keywords_matched': '|'.join(sorted({kw for kws in p_hits.values() for kw in kws})),
+                'has_match':        bool(p_hits),
+            }
+
+        threads.append({
+            'id':               sid,
+            'post':             post_obj,
+            'comments':         comment_list,
+            'categories':       '|'.join(sorted(thread_cats)),
+            'keywords_matched': '|'.join(sorted(thread_kws)),
+            'total_comments':   len(comment_list),
+            'matched_count':    len([c for c in comment_list if c['has_match']]) + (1 if p_hits else 0),
+        })
+
+    # Sort by total matched items descending
+    threads.sort(key=lambda t: -t['matched_count'])
+    return threads
 
 
-def write_csv(rows, path, fieldnames):
-    with open(path, 'w', newline='', encoding='utf-8-sig') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
-        writer.writeheader()
-        writer.writerows(rows)
-    print(f"  Wrote {len(rows):,} rows -> {os.path.basename(path)}")
-
-
-def print_summary(results, label):
+def print_summary(threads):
     cat_counts = Counter()
-    for r in results:
-        for cat in r['categories'].split('|'):
+    for t in threads:
+        for cat in t['categories'].split('|'):
             if cat:
                 cat_counts[cat] += 1
-    print(f"\n{label}: {len(results):,} items matched")
+    print(f"\nThreads: {len(threads):,}")
     for cat, n in sorted(cat_counts.items(), key=lambda x: -x[1]):
-        print(f"  {cat:<60} {n:>6,}")
+        print(f"  {cat:<60} {n:>5,}")
 
 
 if __name__ == '__main__':
     args         = sys.argv[1:]
-    do_posts     = '--comments' not in args
-    do_comments  = '--posts'    not in args
-    summary_only = '--summary'  in args
+    summary_only = '--summary' in args
 
     keywords = load_keywords()
     date_tag = datetime.today().strftime('%Y-%m-%d')
 
-    if do_posts:
-        print("Scanning posts...")
-        post_results = scan_posts(keywords)
-        print_summary(post_results, "Posts")
-        if not summary_only:
-            out    = os.path.join(BASE_DIR, f'sample_posts_{date_tag}.csv')
-            fields = ['type', 'id', 'url', 'author', 'created_utc', 'score',
-                      'num_comments', 'flair', 'title', 'text', 'categories', 'keywords_matched']
-            write_csv(post_results, out, fields)
+    threads = build_threads(keywords, summary_only=summary_only)
 
-    if do_comments:
-        print("Scanning comments...")
-        comment_results = scan_comments(keywords)
-        print_summary(comment_results, "Comments")
-        if not summary_only:
-            out    = os.path.join(BASE_DIR, f'sample_comments_{date_tag}.csv')
-            fields = ['type', 'id', 'submission_id', 'url', 'author', 'created_utc',
-                      'score', 'text', 'categories', 'keywords_matched',
-                      'parent_title', 'parent_text', 'parent_url', 'parent_author']
-            write_csv(comment_results, out, fields)
+    if not summary_only:
+        print_summary(threads)
+        out = os.path.join(BASE_DIR, f'sample_threads_{date_tag}.json')
+        with open(out, 'w', encoding='utf-8') as f:
+            json.dump(threads, f, ensure_ascii=False)
+        size_mb = os.path.getsize(out) / 1_048_576
+        print(f"\nWrote {len(threads):,} threads -> {os.path.basename(out)} ({size_mb:.1f} MB)")
 
     print("\nDone.")

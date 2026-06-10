@@ -17,78 +17,80 @@
       --accent-bg: #eff6ff;
       --green:     #16a34a;
       --green-bg:  #dcfce7;
+      --match-bg:  #fffbeb;
+      --match-border: #fbbf24;
       --red:       #dc2626;
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-           background: var(--bg); color: var(--text); }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); }
 
-    /* ── SETUP OVERLAY ── */
-    #setup-overlay {
-      position: fixed; inset: 0;
-      background: rgba(10,10,10,.55); backdrop-filter: blur(5px);
-      display: flex; align-items: center; justify-content: center; z-index: 999;
-    }
-    #setup-box {
-      background: white; border-radius: 16px; padding: 48px 40px;
-      max-width: 440px; width: 90%; text-align: center;
-      box-shadow: 0 24px 64px rgba(0,0,0,.18);
-    }
+    /* ── SETUP ── */
+    #setup-overlay { position: fixed; inset: 0; background: rgba(10,10,10,.55); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 999; }
+    #setup-box { background: white; border-radius: 16px; padding: 48px 40px; max-width: 440px; width: 90%; text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,.18); }
     #setup-box h1 { font-size: 1.25rem; margin-bottom: 10px; }
     #setup-box p  { color: var(--muted); font-size: .88rem; line-height: 1.6; margin-bottom: 28px; }
-    #coder-name-input {
-      width: 100%; padding: 12px 16px; font-size: 1rem;
-      border: 2px solid var(--border); border-radius: 8px;
-      outline: none; margin-bottom: 12px; transition: border-color .2s;
-    }
+    #coder-name-input { width: 100%; padding: 12px 16px; font-size: 1rem; border: 2px solid var(--border); border-radius: 8px; outline: none; margin-bottom: 12px; transition: border-color .2s; }
     #coder-name-input:focus { border-color: var(--accent); }
-    #start-btn {
-      width: 100%; padding: 13px; background: var(--accent); color: white;
-      border: none; border-radius: 8px; font-size: 1rem; font-weight: 700;
-      cursor: pointer; transition: opacity .15s;
-    }
+    #start-btn { width: 100%; padding: 13px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; }
     #start-btn:hover { opacity: .88; }
 
-    /* ── APP SHELL ── */
-    #app { display: none; min-height: 100vh; }
-
-    header {
-      background: white; border-bottom: 1px solid var(--border);
-      padding: 0 20px; height: 52px;
-      display: flex; align-items: center; gap: 14px;
-      position: sticky; top: 0; z-index: 100;
-    }
-    header h1 { font-size: .9rem; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* ── SHELL ── */
+    #app { display: none; }
+    header { background: white; border-bottom: 1px solid var(--border); padding: 0 20px; height: 52px; display: flex; align-items: center; gap: 14px; position: sticky; top: 0; z-index: 100; }
+    header h1 { font-size: .9rem; font-weight: 700; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .coder-badge { background: var(--accent-bg); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: .78rem; font-weight: 700; white-space: nowrap; }
     .progress-text { font-size: .78rem; color: var(--muted); white-space: nowrap; }
-    .progress-bar-wrap { height: 3px; background: var(--border); position: sticky; top: 52px; z-index: 99; }
+    .progress-bar-wrap { height: 3px; background: var(--border); }
     #progress-bar { height: 100%; background: var(--accent); transition: width .5s; width: 0; }
 
-    /* ── FILTER BAR ── */
-    .filter-bar {
-      background: white; border-bottom: 1px solid var(--border);
-      padding: 0 20px; height: 42px;
-      display: flex; align-items: center; gap: 6px;
-      position: sticky; top: 55px; z-index: 98;
-    }
-    .ftab {
-      padding: 5px 14px; border-radius: 20px; font-size: .78rem; font-weight: 600;
-      cursor: pointer; border: 1px solid transparent; color: var(--muted);
-      background: none; transition: all .15s;
-    }
-    .ftab.active  { background: var(--accent); color: white; border-color: var(--accent); }
+    /* ── TAB BAR ── */
+    .filter-bar { background: white; border-bottom: 1px solid var(--border); padding: 0 20px; height: 42px; display: flex; align-items: center; gap: 6px; position: sticky; top: 55px; z-index: 98; }
+    .ftab { padding: 5px 14px; border-radius: 20px; font-size: .78rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; color: var(--muted); background: none; transition: all .15s; }
+    .ftab.active { background: var(--accent); color: white; border-color: var(--accent); }
     .ftab:not(.active):hover { background: var(--alt); border-color: var(--border); }
-    #back-btn {
-      padding: 5px 12px; border-radius: 20px; font-size: .78rem; font-weight: 600;
-      border: 1px solid var(--border); background: white; cursor: pointer; color: var(--muted);
-      display: none; margin-right: 4px;
-    }
+    #back-btn { padding: 5px 12px; border-radius: 20px; font-size: .78rem; font-weight: 600; border: 1px solid var(--border); background: white; cursor: pointer; color: var(--muted); display: none; }
     #back-btn:hover { background: var(--alt); }
 
-    /* ── SHARED CHIP / BADGE STYLES ── */
+    /* ── LIST TOOLBAR ── */
+    #list-toolbar { display: none; background: white; border-bottom: 1px solid var(--border); padding: 10px 20px; position: sticky; top: 97px; z-index: 97; }
+    #list-toolbar.visible { display: block; }
+    .toolbar-row1 { display: flex; gap: 8px; align-items: center; }
+    .search-wrap { position: relative; flex: 1; }
+    .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    #search-input { width: 100%; padding: 7px 10px 7px 32px; font-size: .85rem; border: 1px solid var(--border); border-radius: 7px; outline: none; transition: border-color .2s; }
+    #search-input:focus { border-color: var(--accent); }
+    .tb-select { padding: 7px 10px; font-size: .82rem; border: 1px solid var(--border); border-radius: 7px; background: white; outline: none; cursor: pointer; color: var(--text); }
+    .tb-select:focus { border-color: var(--accent); }
+    .tb-btn { padding: 7px 12px; font-size: .78rem; font-weight: 600; border: 1px solid var(--border); border-radius: 7px; background: white; cursor: pointer; color: var(--muted); white-space: nowrap; }
+    .tb-btn:hover { background: var(--alt); }
+    .tb-btn.active { background: var(--accent-bg); color: var(--accent); border-color: #93c5fd; }
+    .tb-badge { display: inline-block; background: var(--accent); color: white; border-radius: 20px; font-size: .65rem; font-weight: 800; padding: 1px 5px; margin-left: 3px; }
+
+    /* Filter panel */
+    #filter-panel { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+    #filter-panel.open { display: block; }
+    .fp-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .fp-row:last-child { margin-bottom: 0; }
+    .fp-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); white-space: nowrap; min-width: 70px; }
+    .cat-chips-row { display: flex; flex-wrap: wrap; gap: 5px; }
+    .cat-toggle { padding: 4px 11px; border-radius: 20px; font-size: .72rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--alt); color: var(--muted); transition: all .12s; }
+    .cat-toggle.on { color: white; border-color: transparent; }
+    .cat-toggle.cat-manosphere_and_male_hierarchy.on               { background:#1e40af; }
+    .cat-toggle.cat-anti_women_and_misogyny.on                     { background:#6b21a8; }
+    .cat-toggle.cat-masculinity_discourse.on                       { background:#0f766e; }
+    .cat-toggle.cat-gender_and_feminist_discourse.on               { background:#3730a3; }
+    .cat-toggle.cat-anti_lgbtq_discourse.on                        { background:#9d174d; }
+    .cat-toggle.cat-far_right_and_ideological_overlap.on           { background:#991b1b; }
+    .cat-toggle.cat-dei_institutional_authority_and_parental_rights.on { background:#9a3412; }
+    .results-bar { padding: 6px 20px; font-size: .76rem; color: var(--muted); background: var(--alt); border-bottom: 1px solid var(--border); display: none; }
+    .results-bar.visible { display: block; }
+    #results-count { font-weight: 700; color: var(--text); }
+    .clear-link { color: var(--accent); cursor: pointer; text-decoration: underline; margin-left: 8px; }
+
+    /* ── SHARED CHIPS/BADGES ── */
     .type-badge { padding: 2px 9px; border-radius: 20px; font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
-    .type-badge.post    { background: #dcfce7; color: #15803d; }
-    .type-badge.comment { background: #fef9c3; color: #92400e; }
-    .coded-flag { display: inline-block; background: var(--green-bg); color: #166534; padding: 2px 8px; border-radius: 20px; font-size: .7rem; font-weight: 700; }
+    .type-badge.thread  { background: #e0e7ff; color: #3730a3; }
+    .coded-flag { background: var(--green-bg); color: #166534; padding: 2px 8px; border-radius: 20px; font-size: .7rem; font-weight: 700; }
+    .match-flag { background: #fef3c7; color: #92400e; padding: 2px 7px; border-radius: 4px; font-size: .68rem; font-weight: 700; }
     .cat-chip { padding: 3px 9px; border-radius: 20px; font-size: .7rem; font-weight: 600; }
     .cat-manosphere_and_male_hierarchy               { background:#dbeafe; color:#1e40af; }
     .cat-anti_women_and_misogyny                     { background:#f3e8ff; color:#6b21a8; }
@@ -98,72 +100,58 @@
     .cat-far_right_and_ideological_overlap           { background:#fee2e2; color:#991b1b; }
     .cat-dei_institutional_authority_and_parental_rights { background:#ffedd5; color:#9a3412; }
     .kw-tag { padding: 2px 7px; border-radius: 4px; font-size: .68rem; font-family: monospace; background: #f1f5f9; color: #475569; }
+    mark { background: #fef08a; border-radius: 2px; padding: 0 1px; }
 
     /* ── LIST VIEW ── */
     #list-view { display: none; }
     #list-container { max-width: 820px; margin: 0 auto; padding: 20px 16px; }
-
-    .list-card {
-      background: white; border: 1px solid var(--border); border-radius: 10px;
-      margin-bottom: 10px; padding: 14px 18px; cursor: pointer;
-      transition: border-color .15s, box-shadow .15s;
-      border-left: 3px solid transparent;
-    }
+    .list-card { background: white; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; padding: 14px 18px; cursor: pointer; transition: border-color .15s, box-shadow .15s; border-left: 3px solid transparent; }
     .list-card:hover { border-color: #93c5fd; box-shadow: 0 2px 10px rgba(29,78,216,.08); }
     .list-card.is-coded { border-left-color: var(--green); }
-
     .lc-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 7px; font-size: .76rem; color: var(--muted); }
     .lc-title { font-size: .92rem; font-weight: 700; margin-bottom: 5px; line-height: 1.4; }
-    .lc-preview { font-size: .82rem; color: #555; line-height: 1.5; margin-bottom: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .lc-cats { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 7px; }
-
     .coder-rows { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; display: flex; flex-direction: column; gap: 4px; }
     .coder-row { display: flex; align-items: baseline; gap: 6px; font-size: .76rem; }
-    .coder-name { font-weight: 700; color: var(--green); white-space: nowrap; }
-    .coder-codes { color: var(--text); }
+    .coder-name-lbl { font-weight: 700; color: var(--green); white-space: nowrap; }
     .coder-note { color: var(--muted); font-style: italic; }
-
-    .load-more-btn {
-      display: block; width: 100%; padding: 12px; text-align: center;
-      background: white; border: 1px solid var(--border); border-radius: 8px;
-      font-size: .85rem; cursor: pointer; color: var(--accent); margin-top: 4px;
-      transition: background .15s;
-    }
-    .load-more-btn:hover { background: var(--accent-bg); }
     .list-footer { text-align: center; padding: 16px; color: var(--muted); font-size: .78rem; }
 
     /* ── DETAIL VIEW ── */
-    #detail-view {
-      max-width: 1000px; margin: 0 auto; padding: 20px 16px;
-      display: grid; grid-template-columns: 1fr 320px; gap: 18px; align-items: start;
-    }
-    @media (max-width: 720px) { #detail-view { grid-template-columns: 1fr; } }
+    #detail-view { max-width: 1060px; margin: 0 auto; padding: 20px 16px; display: grid; grid-template-columns: 1fr 320px; gap: 18px; align-items: start; }
+    @media (max-width: 740px) { #detail-view { grid-template-columns: 1fr; } }
+    #empty-state { display: none; text-align: center; padding: 80px 24px; grid-column: 1 / -1; color: var(--muted); }
+    #empty-state h2 { font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
 
-    .card { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
-    .item-meta { padding: 12px 18px; background: var(--alt); border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-    .meta-pill { font-size: .78rem; color: var(--muted); }
-    .meta-pill a { color: var(--accent); text-decoration: none; }
-    .meta-pill a:hover { text-decoration: underline; }
-    .item-title { padding: 14px 18px 4px; font-size: 1rem; font-weight: 700; line-height: 1.4; }
-    .item-body { padding: 10px 18px 14px; font-size: .86rem; line-height: 1.75; color: #333; max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
-    .item-body.expanded { max-height: none; }
-    .expand-btn { display: block; text-align: center; padding: 7px; font-size: .78rem; color: var(--accent); cursor: pointer; border-top: 1px solid var(--border); background: var(--alt); }
+    /* Thread card */
+    .thread-card { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+    .thread-header { padding: 12px 18px; background: var(--alt); border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .thread-header .meta { font-size: .78rem; color: var(--muted); }
+    .thread-header a { color: var(--accent); text-decoration: none; font-size: .78rem; }
+    .thread-header a:hover { text-decoration: underline; }
+    .thread-title { padding: 14px 18px 4px; font-size: 1rem; font-weight: 700; line-height: 1.4; }
+    .seed-section { border-bottom: 2px solid var(--border); }
+    .seed-body { padding: 10px 18px 14px; font-size: .86rem; line-height: 1.75; color: #333; max-height: 260px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
+    .seed-body.expanded { max-height: none; }
+    .expand-btn { display: block; text-align: center; padding: 6px; font-size: .78rem; color: var(--accent); cursor: pointer; border-top: 1px solid var(--border); background: var(--alt); }
     .expand-btn:hover { background: var(--accent-bg); }
-    .item-cats { padding: 10px 18px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 5px; }
-    .kw-row { padding: 0 18px 12px; display: flex; flex-wrap: wrap; gap: 4px; }
-
-    /* Parent post section */
-    .parent-toggle { display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-top: 1px solid var(--border); font-size: .78rem; font-weight: 600; color: var(--muted); cursor: pointer; background: var(--alt); user-select: none; }
-    .parent-toggle:hover { background: #f0f0ea; }
-    .parent-toggle .arrow { transition: transform .2s; display: inline-block; }
-    .parent-toggle.open .arrow { transform: rotate(90deg); }
-    .parent-body { display: none; padding: 12px 18px 14px; border-top: 1px solid var(--border); background: #fafaf7; }
-    .parent-body.open { display: block; }
-    .parent-post-title { font-size: .82rem; font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
-    .parent-post-title a { color: var(--accent); text-decoration: none; }
-    .parent-post-title a:hover { text-decoration: underline; }
-    .parent-post-author { font-size: .72rem; color: var(--muted); margin-bottom: 8px; }
-    .parent-post-text { font-size: .82rem; line-height: 1.65; color: #444; max-height: 180px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
+    .seed-match-bar { padding: 8px 18px; display: flex; flex-wrap: wrap; gap: 4px; background: var(--match-bg); border-top: 1px solid var(--match-border); }
+    .comments-header { padding: 10px 18px; font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--border); background: var(--alt); display: flex; justify-content: space-between; align-items: center; }
+    .comment-nav-btns { display: flex; gap: 5px; }
+    .cnav-btn { padding: 3px 9px; font-size: .72rem; border: 1px solid var(--border); border-radius: 4px; background: white; cursor: pointer; color: var(--muted); }
+    .cnav-btn:hover { background: var(--alt); }
+    .comments-list { max-height: 480px; overflow-y: auto; }
+    .comment-item { padding: 10px 18px; border-bottom: 1px solid var(--border); font-size: .84rem; }
+    .comment-item:last-child { border-bottom: none; }
+    .comment-item.has-match { background: var(--match-bg); border-left: 3px solid var(--match-border); }
+    .comment-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 5px; font-size: .74rem; color: var(--muted); }
+    .comment-meta a { color: var(--accent); text-decoration: none; }
+    .comment-text { line-height: 1.65; color: #333; white-space: pre-wrap; word-break: break-word; }
+    .comment-text.truncated { max-height: 80px; overflow: hidden; }
+    .comment-expand { font-size: .72rem; color: var(--accent); cursor: pointer; margin-top: 3px; display: inline-block; }
+    .comment-match-chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+    .thread-cats-bar { padding: 10px 18px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 5px; }
+    .kw-row { padding: 0 18px 10px; display: flex; flex-wrap: wrap; gap: 4px; }
 
     /* Coding panel */
     .panel { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 18px; }
@@ -179,11 +167,10 @@
     .add-code-row input { flex: 1; padding: 7px 10px; font-size: .82rem; border: 1px solid var(--border); border-radius: 6px; outline: none; transition: border-color .2s; }
     .add-code-row input:focus { border-color: var(--accent); }
     .add-btn { padding: 7px 11px; background: var(--accent-bg); color: var(--accent); border: none; border-radius: 6px; font-size: .82rem; font-weight: 700; cursor: pointer; }
-    .add-btn:hover { background: #dbeafe; }
     #notes-input { width: 100%; padding: 9px 10px; font-size: .85rem; font-family: inherit; line-height: 1.5; border: 1px solid var(--border); border-radius: 6px; outline: none; resize: vertical; min-height: 80px; transition: border-color .2s; }
     #notes-input:focus { border-color: var(--accent); }
     .save-row { display: flex; gap: 8px; margin-top: 4px; }
-    .btn-primary { flex: 1; padding: 11px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: .88rem; font-weight: 700; cursor: pointer; transition: opacity .15s; }
+    .btn-primary { flex: 1; padding: 11px; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: .88rem; font-weight: 700; cursor: pointer; }
     .btn-primary:hover { opacity: .88; }
     .btn-secondary { padding: 11px 14px; background: var(--alt); color: var(--text); border: 1px solid var(--border); border-radius: 8px; font-size: .88rem; cursor: pointer; }
     .btn-secondary:hover { background: var(--border); }
@@ -196,29 +183,28 @@
     .nav-btn:hover { background: var(--alt); }
     .nav-btn:disabled { opacity: .38; cursor: default; }
     #item-counter { font-size: .78rem; color: var(--muted); }
-    #empty-state { display: none; text-align: center; padding: 80px 24px; grid-column: 1 / -1; color: var(--muted); }
-    #empty-state h2 { font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
-
-    /* Existing coders shown in detail view */
     .existing-coders { border-top: 1px solid var(--border); margin-top: 10px; padding-top: 10px; }
     .existing-coders-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
-    .existing-coder-row { display: flex; flex-wrap: wrap; gap: 4px; align-items: baseline; font-size: .78rem; margin-bottom: 4px; }
-    .existing-coder-name { font-weight: 700; color: var(--green); margin-right: 2px; }
+    .ec-row { display: flex; flex-wrap: wrap; gap: 4px; font-size: .78rem; margin-bottom: 4px; }
+    .ec-name { font-weight: 700; color: var(--green); }
+
+    /* Keyboard shortcut hint */
+    .kbd-hint { display: inline-block; font-size: .65rem; font-family: monospace; background: var(--alt); border: 1px solid var(--border); border-radius: 3px; padding: 1px 4px; color: var(--muted); }
   </style>
 </head>
 <body>
 
-<!-- ── SETUP ── -->
+<!-- SETUP -->
 <div id="setup-overlay">
   <div id="setup-box">
     <h1>Far-Right School Settings Study</h1>
-    <p>Qualitative coding interface for r/AustralianTeachers. Enter your name — your coding saves automatically and syncs to the research team.</p>
+    <p>Qualitative coding interface for r/AustralianTeachers. Each item is a complete thread — the seed post plus all comments, with keyword matches highlighted. Enter your name to begin.</p>
     <input id="coder-name-input" type="text" placeholder="Your name" autocomplete="off" maxlength="40" />
     <button id="start-btn">Start Coding</button>
   </div>
 </div>
 
-<!-- ── APP ── -->
+<!-- APP -->
 <div id="app">
   <header>
     <h1>Far-Right School Settings &mdash; Coding</h1>
@@ -227,11 +213,57 @@
   </header>
   <div class="progress-bar-wrap"><div id="progress-bar"></div></div>
 
+  <!-- Tab bar -->
   <div class="filter-bar">
     <button id="back-btn" onclick="goBackToList()">&#8592; List</button>
     <button class="ftab active" data-f="uncoded">Uncoded</button>
     <button class="ftab" data-f="coded">Coded</button>
     <button class="ftab" data-f="all">All</button>
+  </div>
+
+  <!-- List toolbar (visible only in list/coded/all views) -->
+  <div id="list-toolbar">
+    <div class="toolbar-row1">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="search-input" type="text" placeholder="Search titles and posts&hellip;" autocomplete="off" />
+      </div>
+      <select id="sort-select" class="tb-select" title="Sort order">
+        <option value="match_desc">Most matches first</option>
+        <option value="match_asc">Fewest matches first</option>
+        <option value="date_desc">Newest first</option>
+        <option value="date_asc">Oldest first</option>
+        <option value="comments_desc">Most comments first</option>
+        <option value="score_desc">Highest score first</option>
+      </select>
+      <button class="tb-btn" id="filter-toggle-btn" onclick="toggleFilterPanel()">Filters <span id="filter-badge" class="tb-badge" style="display:none">0</span></button>
+      <button class="tb-btn" id="clear-filters-btn" onclick="clearFilters()" style="display:none">&#10005; Clear</button>
+    </div>
+    <div id="filter-panel">
+      <div class="fp-row">
+        <span class="fp-label">Category</span>
+        <div class="cat-chips-row" id="cat-chips"></div>
+      </div>
+      <div class="fp-row">
+        <span class="fp-label">Code</span>
+        <select id="filter-code-select" class="tb-select" style="min-width:180px">
+          <option value="">Any code</option>
+        </select>
+        <span class="fp-label" style="margin-left:10px">Coder</span>
+        <select id="filter-coder-select" class="tb-select" style="min-width:140px">
+          <option value="">Anyone</option>
+        </select>
+        <span class="fp-label" style="margin-left:10px">Min matches</span>
+        <input id="filter-min-matches" type="number" min="1" max="99" value="" placeholder="any"
+          class="tb-select" style="width:65px" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Results bar -->
+  <div class="results-bar" id="results-bar">
+    Showing <span id="results-count">0</span> threads
+    <span id="clear-link-wrap" style="display:none"><span class="clear-link" onclick="clearFilters()">clear filters</span></span>
   </div>
 
   <!-- LIST VIEW -->
@@ -242,7 +274,7 @@
 
   <!-- DETAIL VIEW -->
   <div id="detail-view">
-    <div id="item-card"></div>
+    <div id="thread-card-wrap"></div>
 
     <div id="coding-col">
       <div class="panel">
@@ -257,39 +289,33 @@
 
       <div class="panel">
         <div class="panel-label">Notes / Analytical Memo</div>
-        <textarea id="notes-input" placeholder="Add notes, observations, or analytical memo&hellip;"></textarea>
+        <textarea id="notes-input" placeholder="Add notes, observations, or analytical memo about this thread&hellip;"></textarea>
       </div>
 
       <div id="save-indicator"></div>
-
       <div class="save-row">
-        <button class="btn-primary" id="save-next-btn">Save &amp; Next</button>
-        <button class="btn-secondary" id="skip-btn">Skip</button>
+        <button class="btn-primary" id="save-next-btn">Save &amp; Next <span class="kbd-hint">S</span></button>
+        <button class="btn-secondary" id="skip-btn">Skip <span class="kbd-hint">X</span></button>
       </div>
-
       <div class="nav-row" style="margin-top:12px">
-        <button class="nav-btn" id="prev-btn">&larr; Prev</button>
+        <button class="nav-btn" id="prev-btn">&larr; Prev <span class="kbd-hint">J</span></button>
         <span id="item-counter"></span>
-        <button class="nav-btn" id="next-btn">Next &rarr;</button>
+        <button class="nav-btn" id="next-btn">Next <span class="kbd-hint">K</span> &rarr;</button>
       </div>
     </div>
 
     <div id="empty-state">
-      <h2>All items coded</h2>
-      <p>Switch to <strong>All</strong> or <strong>Coded</strong> to review your decisions.</p>
+      <h2>All threads coded</h2>
+      <p>Switch to <strong>All</strong> or <strong>Coded</strong> to review.</p>
     </div>
   </div>
 </div>
 
-<!-- Firebase compat SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="data.js"></script>
 
 <script>
-// ================================================================
-//  FIREBASE CONFIG
-// ================================================================
 const FIREBASE_CONFIG = {
   apiKey:            "AIzaSyCpo4SFUMgG_6ToDTohBy_vCCN7OKCKlv8",
   authDomain:        "supremacy-school-settings.firebaseapp.com",
@@ -300,9 +326,16 @@ const FIREBASE_CONFIG = {
   appId:             "1:63406653663:web:7e370265b8f6ca7b89296a"
 };
 
-// ================================================================
-//  DEFAULT CODEBOOK
-// ================================================================
+const CAT_LABELS = {
+  manosphere_and_male_hierarchy:               'Manosphere',
+  anti_women_and_misogyny:                     'Misogyny',
+  masculinity_discourse:                       'Masculinity',
+  gender_and_feminist_discourse:               'Gender / Feminism',
+  anti_lgbtq_discourse:                        'Anti-LGBTQ',
+  far_right_and_ideological_overlap:           'Far Right',
+  dei_institutional_authority_and_parental_rights: 'DEI / Parental Rights',
+};
+
 const DEFAULT_CODES = [
   "Relevant to study",
   "Not relevant — discard",
@@ -314,33 +347,38 @@ const DEFAULT_CODES = [
   "Ambiguous — requires more context",
 ];
 
-// ================================================================
-//  STATE
-// ================================================================
 firebase.initializeApp(FIREBASE_CONFIG);
 const db = firebase.database();
 
-let coderName   = '';
-let allItems    = typeof SAMPLE_DATA !== 'undefined' ? SAMPLE_DATA : [];
-let myCoding    = {};   // this coder's decisions
-let allCoding   = {};   // all coders { coderKey: { itemKey: entry } }
-let customCodes = [];
+let coderName    = '';
+let allItems     = typeof SAMPLE_DATA !== 'undefined' ? SAMPLE_DATA : [];
+let myCoding     = {};
+let allCoding    = {};
+let customCodes  = [];
 let activeFilter = 'uncoded';
 let filtered     = [];
 let idx          = 0;
-let viewMode     = 'detail';  // 'detail' | 'list'
+let viewMode     = 'detail';
 let listOffset   = 0;
 const PAGE       = 50;
 
+// ── Filter state ───────────────────────────────────────────────
+let searchQ      = '';
+let sortBy       = 'match_desc';
+let activeCats   = new Set();
+let filterCode   = '';
+let filterCoder  = '';
+let minMatches   = 0;
+let filterPanelOpen = false;
+let searchTimer  = null;
+
 // ── Setup ──────────────────────────────────────────────────────
 document.getElementById('start-btn').addEventListener('click', startSession);
-document.getElementById('coder-name-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') startSession();
-});
+document.getElementById('coder-name-input').addEventListener('keydown', e => { if(e.key==='Enter') startSession(); });
 
 function startSession() {
   const name = document.getElementById('coder-name-input').value.trim();
-  if (!name) { document.getElementById('coder-name-input').focus(); return; }
+  if (!name) return;
   coderName = name;
   document.getElementById('setup-overlay').style.display = 'none';
   document.getElementById('app').style.display = 'block';
@@ -350,334 +388,479 @@ function startSession() {
 
 async function init() {
   await Promise.all([loadMyCoding(), loadCustomCodes(), loadAllCoding()]);
+  buildCatChips();
   applyFilter();
-  viewMode = (activeFilter === 'uncoded') ? 'detail' : 'list';
+  viewMode = activeFilter === 'uncoded' ? 'detail' : 'list';
   render();
   updateProgress();
 
-  // Live sync: my coding
-  db.ref(`coding/${fbCoderKey()}`).on('value', snap => {
-    myCoding = snap.val() || {};
-    allCoding[fbCoderKey()] = myCoding;
-    if (viewMode === 'list') renderList();
-    updateProgress();
-  });
-
-  // Live sync: all coders (for showing who coded what)
   db.ref('coding').on('value', snap => {
     allCoding = snap.val() || {};
     myCoding  = allCoding[fbCoderKey()] || {};
+    refreshCoderSelects();
     if (viewMode === 'list') renderList();
+    else renderExistingCoders(fbKey(filtered[idx]));
     updateProgress();
   });
 
   db.ref('custom_codes').on('child_added', snap => {
-    const code = snap.key.replace(/~~~/g, ' ');
+    const code = snap.key.replace(/~~~/g,' ');
     if (!customCodes.includes(code) && !DEFAULT_CODES.includes(code)) {
       customCodes.push(code);
+      refreshCodeSelect();
       if (viewMode === 'detail') renderCodeList();
     }
   });
 
-  // Infinite scroll sentinel
+  // Toolbar event listeners
+  document.getElementById('search-input').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { searchQ = e.target.value.trim(); refreshList(); }, 220);
+  });
+  document.getElementById('sort-select').addEventListener('change', e => { sortBy = e.target.value; refreshList(); });
+  document.getElementById('filter-code-select').addEventListener('change', e => { filterCode = e.target.value; refreshList(); });
+  document.getElementById('filter-coder-select').addEventListener('change', e => { filterCoder = e.target.value; refreshList(); });
+  document.getElementById('filter-min-matches').addEventListener('input', e => {
+    minMatches = parseInt(e.target.value) || 0; refreshList();
+  });
+
   new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting) {
-      listOffset += PAGE;
-      appendListItems();
+    if (entries[0].isIntersecting && listOffset < filtered.length) {
+      listOffset += PAGE; appendListItems();
     }
   }).observe(document.getElementById('scroll-sentinel'));
-}
 
-function fbCoderKey() { return coderName.replace(/[.#$[\]/]/g, '_'); }
-function itemKey(item) { return `${item.type}__${item.id}`; }
-function fbItemKey(k)  { return k.replace(/[.#$[\]/]/g, '_'); }
-
-function loadMyCoding() {
-  return db.ref(`coding/${fbCoderKey()}`).once('value').then(s => { myCoding = s.val() || {}; });
-}
-function loadCustomCodes() {
-  return db.ref('custom_codes').once('value').then(s => {
-    customCodes = Object.keys(s.val() || {}).map(k => k.replace(/~~~/g, ' '));
+  // Keyboard shortcuts (detail view)
+  document.addEventListener('keydown', e => {
+    if (viewMode !== 'detail') return;
+    const tag = document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (e.key === 'k' || e.key === 'ArrowRight') { e.preventDefault(); if(idx<filtered.length-1){idx++;renderThread();} }
+    if (e.key === 'j' || e.key === 'ArrowLeft')  { e.preventDefault(); if(idx>0){idx--;renderThread();} }
+    if (e.key === 's') { e.preventDefault(); saveAndNext(); }
+    if (e.key === 'x') { e.preventDefault(); advance(); }
   });
 }
-function loadAllCoding() {
-  return db.ref('coding').once('value').then(s => { allCoding = s.val() || {}; });
+
+function fbCoderKey() { return coderName.replace(/[.#$[\]/]/g,'_'); }
+function fbKey(t) { return t ? t.id.replace(/[.#$[\]/]/g,'_') : ''; }
+function loadMyCoding()    { return db.ref(`coding/${fbCoderKey()}`).once('value').then(s => { myCoding = s.val()||{}; }); }
+function loadAllCoding()   { return db.ref('coding').once('value').then(s => { allCoding = s.val()||{}; }); }
+function loadCustomCodes() { return db.ref('custom_codes').once('value').then(s => { customCodes = Object.keys(s.val()||{}).map(k=>k.replace(/~~~/g,' ')); }); }
+
+function getItemCoders(key) {
+  return Object.entries(allCoding).map(([ck, items]) =>
+    items && items[key] ? { name: ck.replace(/_/g,' '), ...items[key] } : null
+  ).filter(Boolean);
 }
 
-function getItemCoders(fbKey) {
-  const out = [];
-  for (const [ck, items] of Object.entries(allCoding)) {
-    if (items && items[fbKey]) {
-      out.push({ name: ck.replace(/_/g, ' '), ...items[fbKey] });
-    }
-  }
-  return out;
+// ── Toolbar UI builders ────────────────────────────────────────
+function buildCatChips() {
+  const wrap = document.getElementById('cat-chips');
+  wrap.innerHTML = Object.entries(CAT_LABELS).map(([key, label]) =>
+    `<button class="cat-toggle cat-${key}" data-cat="${key}" onclick="toggleCat('${key}')">${label}</button>`
+  ).join('');
 }
 
-// ── Filter ─────────────────────────────────────────────────────
+function toggleCat(cat) {
+  activeCats.has(cat) ? activeCats.delete(cat) : activeCats.add(cat);
+  document.querySelectorAll(`.cat-toggle[data-cat="${cat}"]`).forEach(el => el.classList.toggle('on', activeCats.has(cat)));
+  refreshList();
+}
+
+function toggleFilterPanel() {
+  filterPanelOpen = !filterPanelOpen;
+  document.getElementById('filter-panel').classList.toggle('open', filterPanelOpen);
+  document.getElementById('filter-toggle-btn').classList.toggle('active', filterPanelOpen);
+}
+
+function refreshCodeSelect() {
+  const sel = document.getElementById('filter-code-select');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">Any code</option>' +
+    [...DEFAULT_CODES, ...customCodes].map(c => `<option value="${esc(c)}"${prev===c?' selected':''}>${esc(c)}</option>`).join('');
+}
+
+function refreshCoderSelects() {
+  const sel = document.getElementById('filter-coder-select');
+  const prev = sel.value;
+  const coderKeys = Object.keys(allCoding);
+  sel.innerHTML = '<option value="">Anyone</option>' +
+    coderKeys.map(ck => { const name = ck.replace(/_/g,' '); return `<option value="${esc(ck)}"${prev===ck?' selected':''}>${esc(name)}</option>`; }).join('');
+  refreshCodeSelect();
+}
+
+function countActiveFilters() {
+  return (searchQ?1:0) + activeCats.size + (filterCode?1:0) + (filterCoder?1:0) + (minMatches>0?1:0);
+}
+
+function updateFilterBadge() {
+  const n = countActiveFilters();
+  const badge = document.getElementById('filter-badge');
+  const clearBtn = document.getElementById('clear-filters-btn');
+  const clearLink = document.getElementById('clear-link-wrap');
+  badge.style.display = n ? 'inline-block' : 'none';
+  badge.textContent = n;
+  clearBtn.style.display = n ? '' : 'none';
+  if (clearLink) clearLink.style.display = n ? '' : 'none';
+}
+
+function clearFilters() {
+  searchQ = ''; filterCode = ''; filterCoder = ''; minMatches = 0;
+  activeCats.clear();
+  sortBy = 'match_desc';
+  document.getElementById('search-input').value = '';
+  document.getElementById('sort-select').value = 'match_desc';
+  document.getElementById('filter-code-select').value = '';
+  document.getElementById('filter-coder-select').value = '';
+  document.getElementById('filter-min-matches').value = '';
+  document.querySelectorAll('.cat-toggle').forEach(el => el.classList.remove('on'));
+  refreshList();
+}
+
+function refreshList() { listOffset = 0; applyFilter(); renderList(); updateFilterBadge(); }
+
+// ── Filter + sort ──────────────────────────────────────────────
 document.querySelectorAll('.ftab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     activeFilter = btn.dataset.f;
-    listOffset   = 0;
-    idx          = 0;
+    listOffset = 0; idx = 0;
     applyFilter();
-    viewMode = (activeFilter === 'uncoded') ? 'detail' : 'list';
+    viewMode = activeFilter === 'uncoded' ? 'detail' : 'list';
     document.getElementById('back-btn').style.display = 'none';
-    render();
-    updateProgress();
+    render(); updateProgress();
   });
 });
 
 function applyFilter() {
-  const isCoded = item => myCoding[fbItemKey(itemKey(item))];
-  if      (activeFilter === 'uncoded') filtered = allItems.filter(i => !isCoded(i));
-  else if (activeFilter === 'coded')   filtered = allItems.filter(i =>  isCoded(i));
-  else                                 filtered = [...allItems];
+  const coded = t => myCoding[fbKey(t)];
+  let base;
+  if      (activeFilter === 'uncoded') base = allItems.filter(t => !coded(t));
+  else if (activeFilter === 'coded')   base = allItems.filter(t =>  coded(t));
+  else                                 base = [...allItems];
+
+  // Search
+  if (searchQ) {
+    const q = searchQ.toLowerCase();
+    base = base.filter(t => {
+      const title = (t.post?.title || '').toLowerCase();
+      const body  = (t.post?.text  || '').toLowerCase();
+      return title.includes(q) || body.includes(q);
+    });
+  }
+
+  // Category filter (thread must contain ALL selected cats)
+  if (activeCats.size) {
+    base = base.filter(t => {
+      const cats = new Set((t.categories||'').split('|').filter(Boolean));
+      for (const c of activeCats) if (!cats.has(c)) return false;
+      return true;
+    });
+  }
+
+  // Code filter (any coder must have applied this code)
+  if (filterCode) {
+    base = base.filter(t => {
+      const coders = getItemCoders(fbKey(t));
+      return coders.some(c => (c.codes||[]).includes(filterCode));
+    });
+  }
+
+  // Coder filter
+  if (filterCoder) {
+    base = base.filter(t => {
+      const data = allCoding[filterCoder];
+      return data && data[fbKey(t)];
+    });
+  }
+
+  // Min matches
+  if (minMatches > 0) {
+    base = base.filter(t => (t.matched_count || 0) >= minMatches);
+  }
+
+  // Sort
+  base.sort((a, b) => {
+    const aDate = a.post?.created_utc || '';
+    const bDate = b.post?.created_utc || '';
+    switch (sortBy) {
+      case 'match_asc':     return (a.matched_count||0) - (b.matched_count||0);
+      case 'date_desc':     return bDate > aDate ? 1 : -1;
+      case 'date_asc':      return aDate > bDate ? 1 : -1;
+      case 'comments_desc': return (b.total_comments||0) - (a.total_comments||0);
+      case 'score_desc':    return (b.post?.score||0) - (a.post?.score||0);
+      default:              return (b.matched_count||0) - (a.matched_count||0);
+    }
+  });
+
+  filtered = base;
 }
 
-// ── Routing ────────────────────────────────────────────────────
+// ── Route ──────────────────────────────────────────────────────
 function render() {
+  const toolbar   = document.getElementById('list-toolbar');
+  const resultsBar = document.getElementById('results-bar');
   if (viewMode === 'list') {
-    document.getElementById('list-view').style.display   = 'block';
+    document.getElementById('list-view').style.display = 'block';
     document.getElementById('detail-view').style.display = 'none';
+    toolbar.classList.add('visible');
+    resultsBar.classList.add('visible');
     renderList();
   } else {
-    document.getElementById('list-view').style.display   = 'none';
+    document.getElementById('list-view').style.display = 'none';
     document.getElementById('detail-view').style.display = 'grid';
-    renderItem();
+    toolbar.classList.remove('visible');
+    resultsBar.classList.remove('visible');
+    renderThread();
   }
 }
-
-function goBackToList() {
-  viewMode = 'list';
-  document.getElementById('back-btn').style.display = 'none';
-  render();
-}
+function goBackToList() { viewMode='list'; document.getElementById('back-btn').style.display='none'; render(); }
 
 // ── LIST VIEW ──────────────────────────────────────────────────
 function renderList() {
-  applyFilter();
   listOffset = 0;
-  const container = document.getElementById('list-container');
-  container.innerHTML = '';
-  if (filtered.length === 0) {
-    container.innerHTML = `<div class="list-footer">No items in this view.</div>`;
-    return;
-  }
+  const c = document.getElementById('list-container');
+  c.innerHTML = '';
+  document.getElementById('results-count').textContent = filtered.length.toLocaleString();
+  updateFilterBadge();
+  if (!filtered.length) { c.innerHTML = '<div class="list-footer">No threads match.</div>'; return; }
   appendListItems();
 }
 
 function appendListItems() {
-  applyFilter();
-  const container = document.getElementById('list-container');
+  const c = document.getElementById('list-container');
   const slice = filtered.slice(listOffset, listOffset + PAGE);
-  slice.forEach((item, i) => {
-    container.appendChild(buildListCard(item, listOffset + i));
-  });
-  // footer
-  let footer = container.querySelector('.list-footer');
+  slice.forEach((thread, i) => c.appendChild(buildListCard(thread, listOffset + i)));
+  let footer = c.querySelector('.list-footer');
   if (footer) footer.remove();
   const shown = Math.min(listOffset + PAGE, filtered.length);
   footer = document.createElement('div');
   footer.className = 'list-footer';
-  footer.textContent = `${shown} of ${filtered.length} items`;
-  container.appendChild(footer);
+  footer.textContent = `${shown.toLocaleString()} of ${filtered.length.toLocaleString()} threads`;
+  c.appendChild(footer);
 }
 
-function buildListCard(item, absoluteIdx) {
-  const key    = fbItemKey(itemKey(item));
+function buildListCard(thread, absIdx) {
+  const key    = fbKey(thread);
   const coders = getItemCoders(key);
-  const cats   = (item.categories || '').split('|').filter(Boolean);
-  const date   = item.created_utc
-    ? new Date(item.created_utc).toLocaleDateString('en-AU', { year:'numeric', month:'short', day:'numeric' })
-    : '';
-  const preview = (item.text || '').replace(/\s+/g, ' ').slice(0, 220);
-
-  const catHTML = cats.map(c =>
-    `<span class="cat-chip cat-${c}">${c.replace(/_/g,' ')}</span>`
-  ).join('');
-
-  const codersHTML = coders.length ? `<div class="coder-rows">${coders.map(c => `
-    <div class="coder-row">
-      <span class="coder-name">${esc(c.name)}</span>
-      <span class="coder-codes">${esc((c.codes || []).join(' &middot; ') || '(no codes)')}</span>
-      ${c.note ? `<span class="coder-note">&ldquo;${esc(c.note.slice(0,80))}${c.note.length>80?'&hellip;':''}&rdquo;</span>` : ''}
-    </div>`).join('')}</div>` : '';
+  const cats   = (thread.categories||'').split('|').filter(Boolean);
+  const post   = thread.post || {};
+  const date   = post.created_utc ? new Date(post.created_utc).toLocaleDateString('en-AU',{year:'numeric',month:'short',day:'numeric'}) : '';
+  const title  = highlightSearch(post.title || '(no title)');
 
   const div = document.createElement('div');
-  div.className = `list-card${coders.length ? ' is-coded' : ''}`;
+  div.className = `list-card${coders.length?' is-coded':''}`;
   div.innerHTML = `
     <div class="lc-meta">
-      <span class="type-badge ${item.type}">${item.type}</span>
+      <span class="type-badge thread">thread</span>
       ${date ? `<span>${date}</span>` : ''}
-      ${item.author ? `<span>u/${esc(item.author)}</span>` : ''}
-      ${item.score  ? `<span>&#9650; ${item.score}</span>` : ''}
+      ${post.author ? `<span>u/${esc(post.author)}</span>` : ''}
+      ${post.score != null ? `<span>&#9650; ${post.score}</span>` : ''}
+      <span>${thread.total_comments} comment${thread.total_comments!==1?'s':''}</span>
+      <span class="match-flag">${thread.matched_count} match${thread.matched_count!==1?'es':''}</span>
       ${coders.length ? `<span class="coded-flag">${coders.length} coder${coders.length>1?'s':''}</span>` : ''}
     </div>
-    ${item.title  ? `<div class="lc-title">${esc(item.title)}</div>` : ''}
-    ${preview     ? `<div class="lc-preview">${esc(preview)}${item.text && item.text.length > 220 ? '…' : ''}</div>` : ''}
-    ${catHTML     ? `<div class="lc-cats">${catHTML}</div>` : ''}
-    ${codersHTML}
+    <div class="lc-title">${title}</div>
+    ${cats.length ? `<div class="lc-cats">${cats.map(c=>`<span class="cat-chip cat-${c}">${CAT_LABELS[c]||c.replace(/_/g,' ')}</span>`).join('')}</div>` : ''}
+    ${coders.length ? `<div class="coder-rows">${coders.map(c=>`
+      <div class="coder-row">
+        <span class="coder-name-lbl">${esc(c.name)}</span>
+        <span>${esc((c.codes||[]).join(' · ')||'(no codes)')}</span>
+        ${c.note ? `<span class="coder-note">&ldquo;${esc(c.note.slice(0,80))}${c.note.length>80?'…':''}&rdquo;</span>` : ''}
+      </div>`).join('')}</div>` : ''}
   `;
-  div.addEventListener('click', () => openDetail(absoluteIdx));
+  div.addEventListener('click', () => openDetail(absIdx));
   return div;
 }
 
-function openDetail(absoluteIdx) {
-  idx      = absoluteIdx;
-  viewMode = 'detail';
+function highlightSearch(text) {
+  if (!searchQ) return esc(text);
+  const escaped = esc(text);
+  const q = searchQ.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return escaped.replace(new RegExp(q, 'gi'), m => `<mark>${m}</mark>`);
+}
+
+function openDetail(absIdx) {
+  idx = absIdx; viewMode = 'detail';
   document.getElementById('back-btn').style.display = '';
   render();
 }
 
-// ── DETAIL VIEW ────────────────────────────────────────────────
-function renderItem() {
+// ── THREAD DETAIL VIEW ─────────────────────────────────────────
+function renderThread() {
   applyFilter();
-  const card      = document.getElementById('item-card');
+  const wrap      = document.getElementById('thread-card-wrap');
   const empty     = document.getElementById('empty-state');
   const codingCol = document.getElementById('coding-col');
 
-  if (filtered.length === 0) {
-    card.innerHTML = '';
-    empty.style.display  = 'block';
+  if (!filtered.length) {
+    wrap.innerHTML = '';
+    empty.style.display = 'block';
     codingCol.style.display = 'none';
     document.getElementById('item-counter').textContent = '';
     return;
   }
-
-  empty.style.display     = 'none';
+  empty.style.display = 'none';
   codingCol.style.display = '';
-
   if (idx >= filtered.length) idx = filtered.length - 1;
   if (idx < 0) idx = 0;
 
-  const item    = filtered[idx];
-  const key     = fbItemKey(itemKey(item));
-  const saved   = myCoding[key] || {};
-  const cats    = (item.categories || '').split('|').filter(Boolean);
-  const kws     = (item.keywords_matched || '').split('|').filter(Boolean);
-  const date    = item.created_utc
-    ? new Date(item.created_utc).toLocaleDateString('en-AU', { year:'numeric', month:'short', day:'numeric' })
-    : '';
-  const score   = item.score !== '' && item.score != null ? `&#9650; ${item.score}` : '';
-  const flair   = item.flair ? `<span class="meta-pill">${esc(item.flair)}</span>` : '';
+  const thread = filtered[idx];
+  const key    = fbKey(thread);
+  const saved  = myCoding[key] || {};
+  const post   = thread.post || {};
+  const cats   = (thread.categories||'').split('|').filter(Boolean);
+  const kws    = (thread.keywords_matched||'').split('|').filter(Boolean);
+  const date   = post.created_utc ? new Date(post.created_utc).toLocaleDateString('en-AU',{year:'numeric',month:'short',day:'numeric'}) : '';
   const already = saved.codes ? '<span class="coded-flag" style="margin-left:8px">Coded</span>' : '';
 
-  const titleBlock = (item.type === 'post' && item.title)
-    ? `<div class="item-title">${esc(item.title)}${already}</div>`
-    : `<div class="item-title" style="font-size:.82rem;color:var(--muted);padding-bottom:0">Comment${already}</div>`;
+  const postBody = post.text || '';
+  const postLong = postBody.length > 500;
+  const postCats = (post.categories||'').split('|').filter(Boolean);
+  const postKws  = (post.keywords_matched||'').split('|').filter(Boolean);
+  const seedMatchBar = post.has_match === 'True' || post.has_match === true
+    ? `<div class="seed-match-bar">
+        ${postCats.map(c=>`<span class="cat-chip cat-${c}">${CAT_LABELS[c]||c.replace(/_/g,' ')}</span>`).join('')}
+        ${postKws.map(k=>`<span class="kw-tag">${esc(k)}</span>`).join('')}
+       </div>` : '';
 
-  const body = item.text || '';
-  const needsExpand = body.length > 600;
+  // Count matched comments for nav hint
+  const matchedCommentIndices = thread.comments.reduce((acc,c,i) => {
+    if (c.has_match === true || c.has_match === 'True') acc.push(i); return acc;
+  }, []);
 
-  const parentBlock = (item.type === 'comment' && item.parent_title) ? `
-    <div class="parent-toggle" id="parent-toggle">
-      <span class="arrow">&#9658;</span>
-      <span>Original post &mdash; u/${esc(item.parent_author || '')}</span>
-    </div>
-    <div class="parent-body" id="parent-body">
-      <div class="parent-post-title">
-        ${item.parent_url
-          ? `<a href="${esc(item.parent_url)}" target="_blank" rel="noopener">${esc(item.parent_title)}</a>`
-          : esc(item.parent_title)}
+  let firstMatchCommentId = null;
+  const commentsHTML = thread.comments.map((c, ci) => {
+    const cDate    = c.created_utc ? new Date(c.created_utc).toLocaleDateString('en-AU',{year:'numeric',month:'short',day:'numeric'}) : '';
+    const indent   = Math.min(c.depth || 0, 4) * 16;
+    const isMatch  = c.has_match === true || c.has_match === 'True';
+    const cCats    = (c.categories||'').split('|').filter(Boolean);
+    const cKws     = (c.keywords_matched||'').split('|').filter(Boolean);
+    const textLong = (c.text||'').length > 300;
+    const anchorId = isMatch && !firstMatchCommentId ? (firstMatchCommentId = `cm_${ci}`, firstMatchCommentId) : `cm_${ci}`;
+    return `
+      <div class="comment-item${isMatch?' has-match':''}" id="${anchorId}" style="padding-left:${18+indent}px">
+        <div class="comment-meta">
+          ${isMatch ? '<span class="match-flag">MATCH</span>' : ''}
+          <span>u/${esc(c.author)}</span>
+          ${cDate ? `<span>${cDate}</span>` : ''}
+          ${c.score != null ? `<span>&#9650; ${c.score}</span>` : ''}
+          ${c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">Reddit &rarr;</a>` : ''}
+        </div>
+        <div class="comment-text${textLong?' truncated':''}" id="ct_${ci}">${esc(c.text)}</div>
+        ${textLong ? `<span class="comment-expand" onclick="expandComment('ct_${ci}',this)">Show more</span>` : ''}
+        ${isMatch && cCats.length ? `<div class="comment-match-chips">
+          ${cCats.map(cat=>`<span class="cat-chip cat-${cat}">${CAT_LABELS[cat]||cat.replace(/_/g,' ')}</span>`).join('')}
+          ${cKws.map(k=>`<span class="kw-tag">${esc(k)}</span>`).join('')}
+        </div>` : ''}
+      </div>`;
+  }).join('');
+
+  const matchNavHtml = matchedCommentIndices.length > 1
+    ? `<div class="comment-nav-btns">
+        <button class="cnav-btn" id="prev-match-btn" title="Previous match">&#8679; match</button>
+        <button class="cnav-btn" id="next-match-btn" title="Next match">&#8681; match</button>
+       </div>` : '';
+
+  wrap.innerHTML = `
+    <div class="thread-card">
+      <div class="thread-header">
+        <span class="type-badge thread">thread</span>
+        ${date ? `<span class="meta">${date}</span>` : ''}
+        ${post.author ? `<span class="meta">u/${esc(post.author)}</span>` : ''}
+        ${post.score != null ? `<span class="meta">&#9650; ${post.score}</span>` : ''}
+        <span class="meta">${thread.total_comments} comments &bull; <strong>${thread.matched_count}</strong> match${thread.matched_count!==1?'es':''}</span>
+        ${post.url ? `<a href="${esc(post.url)}" target="_blank" rel="noopener">View on Reddit &rarr;</a>` : ''}
       </div>
-      ${item.parent_author ? `<div class="parent-post-author">u/${esc(item.parent_author)}</div>` : ''}
-      ${item.parent_text ? `<div class="parent-post-text">${esc(item.parent_text)}</div>` : ''}
-    </div>` : '';
-
-  const catHTML = cats.map(c =>
-    `<span class="cat-chip cat-${c}">${c.replace(/_/g,' ')}</span>`
-  ).join('');
-  const kwHTML = kws.map(k => `<span class="kw-tag">${esc(k)}</span>`).join('');
-
-  card.innerHTML = `
-    <div class="card">
-      <div class="item-meta">
-        <span class="type-badge ${item.type}">${item.type}</span>
-        ${date   ? `<span class="meta-pill">${date}</span>` : ''}
-        ${item.author ? `<span class="meta-pill">u/${esc(item.author)}</span>` : ''}
-        ${score  ? `<span class="meta-pill">${score}</span>` : ''}
-        ${flair}
-        ${item.url ? `<span class="meta-pill"><a href="${esc(item.url)}" target="_blank" rel="noopener">View on Reddit &rarr;</a></span>` : ''}
+      <div class="thread-title">${esc(post.title||'(no title)')}${already}</div>
+      <div class="seed-section">
+        <div class="seed-body${postLong?'':' expanded'}" id="seed-body">${esc(postBody)}</div>
+        ${postLong ? `<div class="expand-btn" id="expand-seed">Show full post</div>` : ''}
+        ${seedMatchBar}
       </div>
-      ${titleBlock}
-      <div class="item-body" id="item-body">${esc(body)}</div>
-      ${needsExpand ? `<div class="expand-btn" id="expand-btn">Show full text</div>` : ''}
-      ${parentBlock}
-      ${catHTML ? `<div class="item-cats">${catHTML}</div>` : ''}
-      ${kwHTML  ? `<div class="kw-row">${kwHTML}</div>` : ''}
+      <div class="comments-header">
+        Comments (${thread.comments.length}${matchedCommentIndices.length ? ` &bull; ${matchedCommentIndices.length} matched` : ''})
+        ${matchNavHtml}
+      </div>
+      <div class="comments-list" id="comments-list">${commentsHTML}</div>
+      ${cats.length ? `<div class="thread-cats-bar">${cats.map(c=>`<span class="cat-chip cat-${c}">${CAT_LABELS[c]||c.replace(/_/g,' ')}</span>`).join('')}</div>` : ''}
+      ${kws.length ? `<div class="kw-row">${kws.map(k=>`<span class="kw-tag">${esc(k)}</span>`).join('')}</div>` : ''}
     </div>
   `;
 
-  if (needsExpand) {
-    document.getElementById('expand-btn').addEventListener('click', () => {
-      const b = document.getElementById('item-body');
-      const e = document.getElementById('expand-btn');
+  if (postLong) {
+    document.getElementById('expand-seed').addEventListener('click', () => {
+      const b = document.getElementById('seed-body');
+      const e = document.getElementById('expand-seed');
       b.classList.toggle('expanded');
-      e.textContent = b.classList.contains('expanded') ? 'Collapse' : 'Show full text';
+      e.textContent = b.classList.contains('expanded') ? 'Collapse post' : 'Show full post';
     });
   }
-  if (document.getElementById('parent-toggle')) {
-    document.getElementById('parent-toggle').addEventListener('click', () => {
-      document.getElementById('parent-toggle').classList.toggle('open');
-      document.getElementById('parent-body').classList.toggle('open');
+
+  // Match navigation buttons
+  if (matchedCommentIndices.length > 1) {
+    let matchCursor = 0;
+    const list = document.getElementById('comments-list');
+    const scrollToMatch = (i) => {
+      const el = document.getElementById(`cm_${matchedCommentIndices[i]}`);
+      if (el && list) list.scrollTop = Math.max(0, el.offsetTop - list.offsetTop - 12);
+    };
+    document.getElementById('prev-match-btn').addEventListener('click', () => {
+      matchCursor = (matchCursor - 1 + matchedCommentIndices.length) % matchedCommentIndices.length;
+      scrollToMatch(matchCursor);
+    });
+    document.getElementById('next-match-btn').addEventListener('click', () => {
+      matchCursor = (matchCursor + 1) % matchedCommentIndices.length;
+      scrollToMatch(matchCursor);
+    });
+  }
+
+  // Auto-scroll to first matched comment
+  if (firstMatchCommentId) {
+    requestAnimationFrame(() => {
+      const anchor = document.getElementById(firstMatchCommentId);
+      const list   = document.getElementById('comments-list');
+      if (anchor && list) list.scrollTop = Math.max(0, anchor.offsetTop - list.offsetTop - 12);
     });
   }
 
   document.getElementById('notes-input').value = saved.note || '';
   renderCodeList(saved.codes || []);
   renderExistingCoders(key);
-
-  document.getElementById('item-counter').textContent = `${idx + 1} / ${filtered.length}`;
-  document.getElementById('prev-btn').disabled = (idx === 0);
-  document.getElementById('next-btn').disabled = (idx === filtered.length - 1);
-  setSaveIndicator('');
+  document.getElementById('item-counter').textContent = `${idx+1} / ${filtered.length}`;
+  document.getElementById('prev-btn').disabled = idx === 0;
+  document.getElementById('next-btn').disabled = idx === filtered.length - 1;
+  setSave('');
 }
 
-// Show other coders' decisions in the coding panel
-function renderExistingCoders(key) {
-  const panel  = document.getElementById('existing-coders-panel');
-  const coders = getItemCoders(key).filter(c => c.name !== coderName);
-  if (!coders.length) { panel.innerHTML = ''; return; }
-  panel.innerHTML = `
-    <div class="existing-coders">
-      <div class="existing-coders-label">Other coders</div>
-      ${coders.map(c => `
-        <div class="existing-coder-row">
-          <span class="existing-coder-name">${esc(c.name)}</span>
-          <span>${esc((c.codes||[]).join(', ') || '(no codes)')}</span>
-          ${c.note ? `<span style="color:var(--muted);font-style:italic">&ldquo;${esc(c.note.slice(0,60))}${c.note.length>60?'&hellip;':''}&rdquo;</span>` : ''}
-        </div>`).join('')}
-    </div>`;
-}
-
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+window.expandComment = (id, el) => {
+  const div = document.getElementById(id);
+  div.classList.toggle('truncated');
+  el.textContent = div.classList.contains('truncated') ? 'Show more' : 'Show less';
+};
 
 // ── Code list ──────────────────────────────────────────────────
 function renderCodeList(checked) {
   if (!checked) {
-    const item = filtered[idx];
-    const k = item ? fbItemKey(itemKey(item)) : null;
-    checked = (k && myCoding[k]) ? (myCoding[k].codes || []) : [];
+    const k = filtered[idx] ? fbKey(filtered[idx]) : null;
+    checked = (k && myCoding[k]) ? myCoding[k].codes||[] : [];
   }
   const all = [...DEFAULT_CODES, ...customCodes];
-  document.getElementById('code-list').innerHTML = all.map((code, i) => {
+  document.getElementById('code-list').innerHTML = all.map((code,i) => {
     const on  = checked.includes(code);
     const uid = `c_${i}`;
-    return `<div class="code-row ${on?'on':''}" onclick="toggleCode(this)">
-      <input type="checkbox" id="${uid}" ${on?'checked':''} onclick="event.stopPropagation()">
+    return `<div class="code-row${on?' on':''}" onclick="toggleCode(this)">
+      <input type="checkbox" id="${uid}"${on?' checked':''} onclick="event.stopPropagation()">
       <label for="${uid}">${esc(code)}</label>
     </div>`;
   }).join('');
 }
-window.toggleCode = el => { const cb = el.querySelector('input'); cb.checked = !cb.checked; el.classList.toggle('on', cb.checked); };
+window.toggleCode = el => { const cb = el.querySelector('input'); cb.checked=!cb.checked; el.classList.toggle('on',cb.checked); };
 
 document.getElementById('add-btn').addEventListener('click', addCode);
-document.getElementById('new-code-input').addEventListener('keydown', e => { if (e.key==='Enter') addCode(); });
+document.getElementById('new-code-input').addEventListener('keydown', e => { if(e.key==='Enter') addCode(); });
 function addCode() {
   const inp  = document.getElementById('new-code-input');
   const code = inp.value.trim();
@@ -685,48 +868,65 @@ function addCode() {
   customCodes.push(code);
   db.ref(`custom_codes/${code.replace(/\s+/g,'~~~')}`).set(true);
   inp.value = '';
+  refreshCodeSelect();
   renderCodeList();
+}
+
+function renderExistingCoders(key) {
+  const panel  = document.getElementById('existing-coders-panel');
+  if (!panel) return;
+  const coders = getItemCoders(key).filter(c => c.name !== coderName);
+  if (!coders.length) { panel.innerHTML = ''; return; }
+  panel.innerHTML = `<div class="existing-coders">
+    <div class="existing-coders-label">Other coders</div>
+    ${coders.map(c => `<div class="ec-row">
+      <span class="ec-name">${esc(c.name)}</span>
+      <span>${esc((c.codes||[]).join(', ')||'(no codes)')}</span>
+      ${c.note ? `<span style="color:var(--muted);font-style:italic">&ldquo;${esc(c.note.slice(0,60))}${c.note.length>60?'…':''}&rdquo;</span>` : ''}
+    </div>`).join('')}
+  </div>`;
 }
 
 // ── Save ───────────────────────────────────────────────────────
 document.getElementById('save-next-btn').addEventListener('click', saveAndNext);
 document.getElementById('skip-btn').addEventListener('click', () => advance());
+document.getElementById('prev-btn').addEventListener('click', () => { if(idx>0){idx--;renderThread();} });
+document.getElementById('next-btn').addEventListener('click', () => { if(idx<filtered.length-1){idx++;renderThread();} });
 
 async function saveAndNext() {
   if (!filtered.length) return;
-  const item  = filtered[idx];
-  const key   = fbItemKey(itemKey(item));
-  const codes = [...document.querySelectorAll('#code-list .code-row.on label')].map(l => l.textContent);
-  const note  = document.getElementById('notes-input').value.trim();
-  setSaveIndicator('Saving&hellip;', 'saving');
+  const thread = filtered[idx];
+  const key    = fbKey(thread);
+  const codes  = [...document.querySelectorAll('#code-list .code-row.on label')].map(l=>l.textContent);
+  const note   = document.getElementById('notes-input').value.trim();
+  setSave('Saving&hellip;','saving');
   try {
-    const entry = { codes, note, timestamp: new Date().toISOString(), item_id: item.id, item_type: item.type, categories: item.categories||'' };
+    const entry = { codes, note, timestamp: new Date().toISOString(), thread_id: thread.id, categories: thread.categories||'' };
     await db.ref(`coding/${fbCoderKey()}/${key}`).set(entry);
     myCoding[key] = entry;
-    setSaveIndicator('Saved', 'saved');
+    setSave('Saved','saved');
     updateProgress();
     setTimeout(advance, 350);
   } catch(err) {
-    setSaveIndicator('Error — check Firebase config', 'error');
+    setSave('Error — check Firebase config','error');
     console.error(err);
   }
 }
-function advance() { applyFilter(); if (idx < filtered.length - 1) idx++; renderItem(); }
-
-document.getElementById('prev-btn').addEventListener('click', () => { if (idx > 0) { idx--; renderItem(); } });
-document.getElementById('next-btn').addEventListener('click', () => { if (idx < filtered.length - 1) { idx++; renderItem(); } });
+function advance() { applyFilter(); if(idx<filtered.length-1) idx++; renderThread(); }
 
 // ── Progress ───────────────────────────────────────────────────
 function updateProgress() {
-  const coded = allItems.filter(i => myCoding[fbItemKey(itemKey(i))]).length;
-  const pct   = allItems.length ? (coded / allItems.length * 100) : 0;
-  document.getElementById('progress-bar').style.width = pct.toFixed(1) + '%';
+  const coded = allItems.filter(t => myCoding[fbKey(t)]).length;
+  const pct   = allItems.length ? coded/allItems.length*100 : 0;
+  document.getElementById('progress-bar').style.width = pct.toFixed(1)+'%';
   document.getElementById('progress-text').textContent = `${coded} / ${allItems.length} coded`;
 }
-function setSaveIndicator(msg, cls) {
+function setSave(msg, cls) {
   const el = document.getElementById('save-indicator');
-  el.innerHTML = msg;
-  el.className = cls ? `save-indicator ${cls}` : 'save-indicator';
+  el.innerHTML = msg; el.className = cls ? `save-indicator ${cls}` : 'save-indicator';
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 </script>
 </body>

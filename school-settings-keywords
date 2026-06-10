@@ -6,23 +6,23 @@
         "bluepill", "purple pill", "hypergamy", "top g", "macho", "machismo",
         "manosphere", "mgtow", "going your own way", "mra", "pickup artist", "pua",
         "daygame", "nightgame", "negging", "spin plates", "dating market",
-        "sexual market value", "smv", "looks money status", "seethe", "normie",
+        "sexual market value", "smv", "looks money status", "normie",
         "chad move", "cuck", "cuckold", "soy", "soyjak", "bugman", "wagecuck",
         "wage slave"
     ],
     "anti_women_and_misogyny": [
         "simp", "simping", "whiteknight", "white knight", "orbiter", "foid",
-        "roastie", "thot", "pick me", "pickme", "female privilege", "female nature",
+        "roastie", "thot", "female privilege", "female nature",
         "women are", "women only", "females are", "bitches", "hoes", "gold digger",
         "attention seeker", "manipulative women", "single mothers", "women belong",
-        "whore", "slut", "hooker", "usedup", "used up", "cunt", "bitch"
+        "whore", "slut", "hooker", "cunt", "bitch", "feminine", "femininity", "female"
     ],
     "masculinity_discourse": [
         "masculinity", "masculine", "real man", "man up", "be a man", "mens rights",
         "men's rights", "male privilege", "male dominance", "male superiority",
-        "toxic masculinity", "traditional masculinity", "protect provide", "provider",
-        "breadwinner", "men should", "men need to", "what men want", "men are better",
-        "grindset", "hustle", "no excuses", "stoic",
+        "toxic masculinity", "traditional masculinity", "protect provide",
+        "men should", "men need to", "what men want", "men are better",
+        "grindset",
         "stoicism", "brotherhood", "sniveling", "masculinity crisis", "positive masculinity",
         "anti-masculinity curriculum", "masculinity under attack", "demonising boys",
         "war on boys", "boys being left behind", "boys left behind", "boys blamed",
@@ -52,7 +52,7 @@
         "western civilization", "tradwife", "trad life", "traditional values",
         "degeneracy", "cultural marxism", "globalism", "clown world", "honkpill",
         "race realism", "identitarianism", "nationalism", "patriotism",
-        "heritage and culture", "white pride", "zog", "replacement theory", "nazi", "neo-nazi",
+        "heritage and culture", "white pride", "zog", "replacement theory", "nazi", "neo-nazi", "nazism",
         "white supremacy", "white supremacist", "white nationalist", "white power",
         "aryan", "ethnostate", "blood and soil", "fourteen words", "14 words",
         "antisemitism", "antisemitic", "jew", "jews", "jewish conspiracy",
@@ -62,7 +62,7 @@
         "radical islam", "terrorist muslim"
     ],
     "dei_institutional_authority_and_parental_rights": [
-        "woke", "anti-woke", "wokeism", "woke curriculum", "woke education",
+        "anti-woke", "wokeism", "woke curriculum", "woke education",
         "anti-woke schools", "DEI", "dei", "forced diversity", "diversity hire",
         "equity initiatives schools", "diversity programs pushback", "inclusion agenda",
         "inclusion gone too far", "critical race theory complaint",
