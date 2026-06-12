@@ -190,6 +190,23 @@
 
     /* Keyboard shortcut hint */
     .kbd-hint { display: inline-block; font-size: .65rem; font-family: monospace; background: var(--alt); border: 1px solid var(--border); border-radius: 3px; padding: 1px 4px; color: var(--muted); }
+
+    /* Target-aware coding panel */
+    .target-indicator { display:flex; align-items:center; gap:8px; padding-bottom:10px; border-bottom:1px solid var(--border); margin-bottom:12px; }
+    .target-label-text { font-weight:700; font-size:.88rem; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .back-to-seed-btn { font-size:.72rem; color:var(--accent); background:none; border:none; cursor:pointer; padding:0; white-space:nowrap; text-decoration:underline; }
+    .panel-sublabel { font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-top:12px; margin-bottom:5px; }
+    #target-note-input { width:100%; padding:8px 10px; font-size:.82rem; font-family:inherit; line-height:1.5; border:1px solid var(--border); border-radius:6px; outline:none; resize:vertical; min-height:55px; transition:border-color .2s; }
+    #target-note-input:focus { border-color:var(--accent); }
+
+    /* Comment coding buttons */
+    .comment-code-btn { padding:2px 7px; font-size:.68rem; font-weight:600; border:1px solid var(--border); border-radius:4px; background:white; cursor:pointer; color:var(--muted); flex-shrink:0; }
+    .comment-code-btn:hover { background:var(--accent-bg); color:var(--accent); border-color:#93c5fd; }
+    .comment-code-btn.has-codes { background:var(--green-bg); color:var(--green); border-color:#86efac; }
+    .seed-section { border-bottom:2px solid var(--border); cursor:pointer; }
+    .seed-section:hover { background:var(--alt); }
+    .seed-section.is-selected { box-shadow:inset 3px 0 0 var(--accent); background:var(--accent-bg); }
+    .comment-item.is-selected { background:var(--accent-bg) !important; box-shadow:inset 3px 0 0 var(--accent); }
   </style>
 </head>
 <body>
@@ -278,18 +295,24 @@
 
     <div id="coding-col">
       <div class="panel">
-        <div class="panel-label">Qualitative Codes</div>
+        <div class="target-indicator">
+          <span class="panel-label" style="margin-bottom:0;font-size:.72rem">Coding:</span>
+          <span class="target-label-text" id="target-label">Seed Post</span>
+          <button class="back-to-seed-btn" id="target-seed-btn" style="display:none" onclick="selectTarget('seed','')">&#8617; Seed Post</button>
+        </div>
         <div id="code-list" class="code-list"></div>
         <div class="add-code-row">
           <input id="new-code-input" type="text" placeholder="Create new code&hellip;" maxlength="80" />
           <button class="add-btn" id="add-btn">Add</button>
         </div>
+        <div class="panel-sublabel" id="target-note-label">Seed Post Note</div>
+        <textarea id="target-note-input" placeholder="Note about this seed post&hellip;"></textarea>
         <div id="existing-coders-panel"></div>
       </div>
 
       <div class="panel">
-        <div class="panel-label">Notes / Analytical Memo</div>
-        <textarea id="notes-input" placeholder="Add notes, observations, or analytical memo about this thread&hellip;"></textarea>
+        <div class="panel-label">Thread Memo</div>
+        <textarea id="notes-input" placeholder="Overall analytical memo for this thread&hellip;"></textarea>
       </div>
 
       <div id="save-indicator"></div>
@@ -362,6 +385,10 @@ let viewMode     = 'detail';
 let listOffset   = 0;
 const PAGE       = 50;
 
+// Per-post/comment coding state
+let currentTarget = 'seed'; // 'seed' or comment index (number as string)
+let codingBuffer  = { seed: {codes:[], note:''}, comments:{}, memo:'' };
+
 // ── Filter state ───────────────────────────────────────────────
 let searchQ      = '';
 let sortBy       = 'match_desc';
@@ -371,6 +398,75 @@ let filterCoder  = '';
 let minMatches   = 0;
 let filterPanelOpen = false;
 let searchTimer  = null;
+
+// ── Coding buffer helpers ──────────────────────────────────────
+function initCodingBuffer(thread) {
+  const key   = fbKey(thread);
+  const saved = myCoding[key] || {};
+  if (saved.seed !== undefined || saved.comments !== undefined) {
+    // New format
+    codingBuffer = {
+      seed: { codes: [...(saved.seed?.codes||[])], note: saved.seed?.note||'' },
+      comments: {},
+      memo: saved.memo||''
+    };
+    if (saved.comments) {
+      for (const [ci, v] of Object.entries(saved.comments)) {
+        codingBuffer.comments[ci] = { codes: [...(v.codes||[])], note: v.note||'' };
+      }
+    }
+  } else if (saved.codes) {
+    // Old thread-level format — treat as seed coding
+    codingBuffer = {
+      seed: { codes: [...saved.codes], note: saved.note||'' },
+      comments: {},
+      memo: ''
+    };
+  } else {
+    codingBuffer = { seed: {codes:[], note:''}, comments:{}, memo:'' };
+  }
+}
+
+function getCurrentTargetData() {
+  if (currentTarget === 'seed') return codingBuffer.seed;
+  const k = String(currentTarget);
+  if (!codingBuffer.comments[k]) codingBuffer.comments[k] = {codes:[], note:''};
+  return codingBuffer.comments[k];
+}
+
+function selectTarget(target, author) {
+  currentTarget = target;
+  document.querySelectorAll('.comment-item').forEach(el => el.classList.remove('is-selected'));
+  const seedSection = document.getElementById('seed-section');
+  if (target === 'seed') {
+    if (seedSection) seedSection.classList.add('is-selected');
+    document.getElementById('target-label').textContent = 'Seed Post';
+    document.getElementById('target-note-label').textContent = 'Seed Post Note';
+    document.getElementById('target-note-input').placeholder = 'Note about this seed post…';
+    document.getElementById('target-seed-btn').style.display = 'none';
+  } else {
+    if (seedSection) seedSection.classList.remove('is-selected');
+    const el = document.getElementById(`cm_${target}`);
+    if (el) { el.classList.add('is-selected'); el.scrollIntoView({block:'nearest'}); }
+    const label = author ? `Comment — u/${author}` : `Comment #${Number(target)+1}`;
+    document.getElementById('target-label').textContent = label;
+    document.getElementById('target-note-label').textContent = 'Comment Note';
+    document.getElementById('target-note-input').placeholder = 'Note about this comment…';
+    document.getElementById('target-seed-btn').style.display = '';
+  }
+  renderCodeList();
+  document.getElementById('target-note-input').value = getCurrentTargetData().note || '';
+  refreshCommentCodeBtns();
+}
+
+function refreshCommentCodeBtns() {
+  document.querySelectorAll('.comment-code-btn').forEach(btn => {
+    const ci      = btn.dataset.ci;
+    const hasCodes = (codingBuffer.comments[ci]?.codes||[]).length > 0;
+    btn.classList.toggle('has-codes', hasCodes);
+    btn.textContent = hasCodes ? '✓ Coded' : '+ Code';
+  });
+}
 
 // ── Setup ──────────────────────────────────────────────────────
 document.getElementById('start-btn').addEventListener('click', startSession);
@@ -422,6 +518,14 @@ async function init() {
   document.getElementById('filter-coder-select').addEventListener('change', e => { filterCoder = e.target.value; refreshList(); });
   document.getElementById('filter-min-matches').addEventListener('input', e => {
     minMatches = parseInt(e.target.value) || 0; refreshList();
+  });
+
+  // Keep coding buffer in sync with panel inputs
+  document.getElementById('target-note-input').addEventListener('input', e => {
+    getCurrentTargetData().note = e.target.value;
+  });
+  document.getElementById('notes-input').addEventListener('input', e => {
+    codingBuffer.memo = e.target.value;
   });
 
   new IntersectionObserver(entries => {
@@ -560,11 +664,15 @@ function applyFilter() {
     });
   }
 
-  // Code filter (any coder must have applied this code)
+  // Code filter (any coder must have applied this code to seed or any comment)
   if (filterCode) {
     base = base.filter(t => {
       const coders = getItemCoders(fbKey(t));
-      return coders.some(c => (c.codes||[]).includes(filterCode));
+      return coders.some(c => {
+        const seedCodes = c.seed?.codes || c.codes || [];
+        if (seedCodes.includes(filterCode)) return true;
+        return Object.values(c.comments||{}).some(cm => (cm.codes||[]).includes(filterCode));
+      });
     });
   }
 
@@ -664,12 +772,17 @@ function buildListCard(thread, absIdx) {
     </div>
     <div class="lc-title">${title}</div>
     ${cats.length ? `<div class="lc-cats">${cats.map(c=>`<span class="cat-chip cat-${c}">${CAT_LABELS[c]||c.replace(/_/g,' ')}</span>`).join('')}</div>` : ''}
-    ${coders.length ? `<div class="coder-rows">${coders.map(c=>`
-      <div class="coder-row">
+    ${coders.length ? `<div class="coder-rows">${coders.map(c => {
+      const seedCodes    = c.seed?.codes || c.codes || [];
+      const commentCount = Object.keys(c.comments||{}).filter(ci => (c.comments[ci]?.codes||[]).length).length;
+      const noteText     = c.memo || c.note || '';
+      return `<div class="coder-row">
         <span class="coder-name-lbl">${esc(c.name)}</span>
-        <span>${esc((c.codes||[]).join(' · ')||'(no codes)')}</span>
-        ${c.note ? `<span class="coder-note">&ldquo;${esc(c.note.slice(0,80))}${c.note.length>80?'…':''}&rdquo;</span>` : ''}
-      </div>`).join('')}</div>` : ''}
+        <span>${esc(seedCodes.join(' · ')||'(no seed codes)')}</span>
+        ${commentCount ? `<span style="color:var(--muted);font-size:.7rem">+${commentCount} comment${commentCount>1?'s':''}</span>` : ''}
+        ${noteText ? `<span class="coder-note">&ldquo;${esc(noteText.slice(0,80))}${noteText.length>80?'…':''}&rdquo;</span>` : ''}
+      </div>`;
+    }).join('')}</div>` : ''}
   `;
   div.addEventListener('click', () => openDetail(absIdx));
   return div;
@@ -707,14 +820,19 @@ function renderThread() {
   if (idx >= filtered.length) idx = filtered.length - 1;
   if (idx < 0) idx = 0;
 
-  const thread = filtered[idx];
-  const key    = fbKey(thread);
-  const saved  = myCoding[key] || {};
-  const post   = thread.post || {};
-  const cats   = (thread.categories||'').split('|').filter(Boolean);
-  const kws    = (thread.keywords_matched||'').split('|').filter(Boolean);
-  const date   = post.created_utc ? new Date(post.created_utc).toLocaleDateString('en-AU',{year:'numeric',month:'short',day:'numeric'}) : '';
-  const already = saved.codes ? '<span class="coded-flag" style="margin-left:8px">Coded</span>' : '';
+  const thread   = filtered[idx];
+  const key      = fbKey(thread);
+  const saved    = myCoding[key] || {};
+  const post     = thread.post || {};
+  const cats     = (thread.categories||'').split('|').filter(Boolean);
+  const kws      = (thread.keywords_matched||'').split('|').filter(Boolean);
+  const date     = post.created_utc ? new Date(post.created_utc).toLocaleDateString('en-AU',{year:'numeric',month:'short',day:'numeric'}) : '';
+  const isCoded  = saved.seed?.codes?.length || saved.codes?.length;
+  const already  = isCoded ? '<span class="coded-flag" style="margin-left:8px">Coded</span>' : '';
+
+  // Initialise buffer before rendering so comment coded badges are correct
+  initCodingBuffer(thread);
+  currentTarget = 'seed';
 
   const postBody = post.text || '';
   const postLong = postBody.length > 500;
@@ -733,13 +851,15 @@ function renderThread() {
 
   let firstMatchCommentId = null;
   const commentsHTML = thread.comments.map((c, ci) => {
-    const cDate    = c.created_utc ? new Date(c.created_utc).toLocaleDateString('en-AU',{year:'numeric',month:'short',day:'numeric'}) : '';
-    const indent   = Math.min(c.depth || 0, 4) * 16;
-    const isMatch  = c.has_match === true || c.has_match === 'True';
-    const cCats    = (c.categories||'').split('|').filter(Boolean);
-    const cKws     = (c.keywords_matched||'').split('|').filter(Boolean);
-    const textLong = (c.text||'').length > 300;
-    const anchorId = isMatch && !firstMatchCommentId ? (firstMatchCommentId = `cm_${ci}`, firstMatchCommentId) : `cm_${ci}`;
+    const cDate      = c.created_utc ? new Date(c.created_utc).toLocaleDateString('en-AU',{year:'numeric',month:'short',day:'numeric'}) : '';
+    const indent     = Math.min(c.depth || 0, 4) * 16;
+    const isMatch    = c.has_match === true || c.has_match === 'True';
+    const cCats      = (c.categories||'').split('|').filter(Boolean);
+    const cKws       = (c.keywords_matched||'').split('|').filter(Boolean);
+    const textLong   = (c.text||'').length > 300;
+    const anchorId   = isMatch && !firstMatchCommentId ? (firstMatchCommentId = `cm_${ci}`, firstMatchCommentId) : `cm_${ci}`;
+    const hasCmCodes = (codingBuffer.comments[String(ci)]?.codes||[]).length > 0;
+    const codeBtnLbl = hasCmCodes ? '✓ Coded' : '+ Code';
     return `
       <div class="comment-item${isMatch?' has-match':''}" id="${anchorId}" style="padding-left:${18+indent}px">
         <div class="comment-meta">
@@ -748,6 +868,8 @@ function renderThread() {
           ${cDate ? `<span>${cDate}</span>` : ''}
           ${c.score != null ? `<span>&#9650; ${c.score}</span>` : ''}
           ${c.url ? `<a href="${esc(c.url)}" target="_blank" rel="noopener">Reddit &rarr;</a>` : ''}
+          <button class="comment-code-btn${hasCmCodes?' has-codes':''}" data-ci="${ci}"
+            onclick="event.stopPropagation(); selectTarget(${ci}, '${esc(c.author)}')">${codeBtnLbl}</button>
         </div>
         <div class="comment-text${textLong?' truncated':''}" id="ct_${ci}">${esc(c.text)}</div>
         ${textLong ? `<span class="comment-expand" onclick="expandComment('ct_${ci}',this)">Show more</span>` : ''}
@@ -775,7 +897,7 @@ function renderThread() {
         ${post.url ? `<a href="${esc(post.url)}" target="_blank" rel="noopener">View on Reddit &rarr;</a>` : ''}
       </div>
       <div class="thread-title">${esc(post.title||'(no title)')}${already}</div>
-      <div class="seed-section">
+      <div class="seed-section is-selected" id="seed-section" title="Click to code this post" onclick="selectTarget('seed','')">
         <div class="seed-body${postLong?'':' expanded'}" id="seed-body">${esc(postBody)}</div>
         ${postLong ? `<div class="expand-btn" id="expand-seed">Show full post</div>` : ''}
         ${seedMatchBar}
@@ -826,8 +948,9 @@ function renderThread() {
     });
   }
 
-  document.getElementById('notes-input').value = saved.note || '';
-  renderCodeList(saved.codes || []);
+  // Activate seed post as default target for this thread
+  selectTarget('seed', '');
+  document.getElementById('notes-input').value = codingBuffer.memo;
   renderExistingCoders(key);
   document.getElementById('item-counter').textContent = `${idx+1} / ${filtered.length}`;
   document.getElementById('prev-btn').disabled = idx === 0;
@@ -842,13 +965,10 @@ window.expandComment = (id, el) => {
 };
 
 // ── Code list ──────────────────────────────────────────────────
-function renderCodeList(checked) {
-  if (!checked) {
-    const k = filtered[idx] ? fbKey(filtered[idx]) : null;
-    checked = (k && myCoding[k]) ? myCoding[k].codes||[] : [];
-  }
+function renderCodeList() {
+  const checked = getCurrentTargetData().codes || [];
   const all = [...DEFAULT_CODES, ...customCodes];
-  document.getElementById('code-list').innerHTML = all.map((code,i) => {
+  document.getElementById('code-list').innerHTML = all.map((code, i) => {
     const on  = checked.includes(code);
     const uid = `c_${i}`;
     return `<div class="code-row${on?' on':''}" onclick="toggleCode(this)">
@@ -857,7 +977,16 @@ function renderCodeList(checked) {
     </div>`;
   }).join('');
 }
-window.toggleCode = el => { const cb = el.querySelector('input'); cb.checked=!cb.checked; el.classList.toggle('on',cb.checked); };
+window.toggleCode = el => {
+  const cb   = el.querySelector('input');
+  const code = el.querySelector('label').textContent;
+  cb.checked = !cb.checked;
+  el.classList.toggle('on', cb.checked);
+  const data = getCurrentTargetData();
+  if (cb.checked) { if (!data.codes.includes(code)) data.codes.push(code); }
+  else { data.codes = data.codes.filter(c => c !== code); }
+  refreshCommentCodeBtns();
+};
 
 document.getElementById('add-btn').addEventListener('click', addCode);
 document.getElementById('new-code-input').addEventListener('keydown', e => { if(e.key==='Enter') addCode(); });
@@ -879,11 +1008,17 @@ function renderExistingCoders(key) {
   if (!coders.length) { panel.innerHTML = ''; return; }
   panel.innerHTML = `<div class="existing-coders">
     <div class="existing-coders-label">Other coders</div>
-    ${coders.map(c => `<div class="ec-row">
-      <span class="ec-name">${esc(c.name)}</span>
-      <span>${esc((c.codes||[]).join(', ')||'(no codes)')}</span>
-      ${c.note ? `<span style="color:var(--muted);font-style:italic">&ldquo;${esc(c.note.slice(0,60))}${c.note.length>60?'…':''}&rdquo;</span>` : ''}
-    </div>`).join('')}
+    ${coders.map(c => {
+      const seedCodes    = c.seed?.codes || c.codes || [];
+      const commentCount = Object.keys(c.comments||{}).filter(ci => (c.comments[ci]?.codes||[]).length).length;
+      const noteText     = c.memo || c.note || '';
+      return `<div class="ec-row">
+        <span class="ec-name">${esc(c.name)}</span>
+        <span>${esc(seedCodes.join(', ')||'(no seed codes)')}</span>
+        ${commentCount ? `<span style="color:var(--muted)">&nbsp;+${commentCount} comment${commentCount>1?'s':''}</span>` : ''}
+        ${noteText ? `<span style="color:var(--muted);font-style:italic">&ldquo;${esc(noteText.slice(0,60))}${noteText.length>60?'…':''}&rdquo;</span>` : ''}
+      </div>`;
+    }).join('')}
   </div>`;
 }
 
@@ -897,11 +1032,16 @@ async function saveAndNext() {
   if (!filtered.length) return;
   const thread = filtered[idx];
   const key    = fbKey(thread);
-  const codes  = [...document.querySelectorAll('#code-list .code-row.on label')].map(l=>l.textContent);
-  const note   = document.getElementById('notes-input').value.trim();
   setSave('Saving&hellip;','saving');
   try {
-    const entry = { codes, note, timestamp: new Date().toISOString(), thread_id: thread.id, categories: thread.categories||'' };
+    const entry = {
+      seed:      codingBuffer.seed,
+      comments:  codingBuffer.comments,
+      memo:      codingBuffer.memo,
+      timestamp: new Date().toISOString(),
+      thread_id: thread.id,
+      categories: thread.categories || ''
+    };
     await db.ref(`coding/${fbCoderKey()}/${key}`).set(entry);
     myCoding[key] = entry;
     setSave('Saved','saved');
